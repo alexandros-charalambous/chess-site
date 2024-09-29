@@ -60,6 +60,10 @@
       "src": "/assets/white-king.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "/assets/wood.jpg",
+      "type": "image/jpg"
     }
   ],
   "start_url": ".",

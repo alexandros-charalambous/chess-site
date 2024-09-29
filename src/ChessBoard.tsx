@@ -1,6 +1,7 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import React, { useState } from "react";
-import { Board } from "./ChessLogic/types";
+import { chessNotations, pieceImages } from "./ChessLogic/chessUtils";
+import { Board, Piece } from "./ChessLogic/types";
 
 interface ChessBoardProps {
   board: Board;
@@ -8,28 +9,31 @@ interface ChessBoardProps {
 }
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
+  const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
+    null
+  );
   const [selectedPiece, setSelectedPiece] = useState<null | {
     from: [number, number];
     piece: string;
   }>(null);
 
-  const pieceImages: { [key: string]: string } = {
-    wP: "/assets/white-pawn.png",
-    wR: "/assets/white-rook.png",
-    wN: "/assets/white-knight.png",
-    wB: "/assets/white-bishop.png",
-    wQ: "/assets/white-queen.png",
-    wK: "/assets/white-king.png",
-    bP: "/assets/black-pawn.png",
-    bR: "/assets/black-rook.png",
-    bN: "/assets/black-knight.png",
-    bB: "/assets/black-bishop.png",
-    bQ: "/assets/black-queen.png",
-    bK: "/assets/black-king.png",
-  };
-
   const getSquareColor = (row: number, col: number) => {
     return (row + col) % 2 === 0 ? "#f0d9b5" : "#b58863";
+  };
+
+  const getSquareStyle = (row: number, col: number) => {
+    const isSelected =
+      selectedSquare && selectedSquare[0] === row && selectedSquare[1] === col;
+    return {
+      boxShadow: isSelected ? "0px 0px 0px 3px #ffffff inset" : "none",
+    };
+  };
+
+  const getImageStyle = (piece: Piece) => {
+    return {
+      width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+      height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+    };
   };
 
   const handleSquareDrop = (row: number, col: number) => {
@@ -39,15 +43,19 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
 
       onMove(from, to);
       setSelectedPiece(null);
+      setSelectedSquare(null);
     }
   };
 
   const handleDragStart = (row: number, col: number, piece: string) => {
     setSelectedPiece({ from: [row, col], piece });
+    setSelectedSquare([row, col]);
   };
 
-  const handleSquareClick = (row: number, col: number, piece: string) => {
-    console.log(`Square clicked: ${row}, ${col}, ${piece}`);
+  const handleSquareClick = (row: number, col: number) => {
+    const notationMap = chessNotations(row, col);
+    console.log(`Square clicked: ${notationMap}`);
+    setSelectedSquare([row, col]);
   };
 
   return (
@@ -74,9 +82,11 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
               justifyContent: "center",
               alignItems: "center",
               fontSize: "30px",
+              ...getSquareStyle(rowIndex, colIndex),
             }}
             onDrop={() => handleSquareDrop(rowIndex, colIndex)}
             onDragOver={(e) => e.preventDefault()}
+            onClick={() => handleSquareClick(rowIndex, colIndex)}
           >
             {piece && (
               <img
@@ -84,8 +94,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
                 alt={piece}
                 draggable
                 onDragStart={() => handleDragStart(rowIndex, colIndex, piece)}
-                onClick={() => handleSquareClick(rowIndex, colIndex, piece)}
-                style={{ width: "80%", height: "80%" }}
+                style={{ ...getImageStyle(piece) }}
               />
             )}
           </Box>

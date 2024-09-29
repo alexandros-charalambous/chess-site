@@ -1,12 +1,14 @@
+import { Button, Container, Grid2, Stack } from "@mui/material";
 import React, { useState } from "react";
 import ChessBoard from "./ChessBoard";
-import { initialBoardSetup } from "./ChessLogic/chessUtils";
 import { isValidMove, makeMove } from "./ChessLogic/chessLogic";
-import { Move, Board } from "./ChessLogic/types";
-import { Button, Container, Grid2, Stack } from "@mui/material";
+import { initialBoardSetup } from "./ChessLogic/chessUtils";
+import { Board, Move } from "./ChessLogic/types";
+import MoveHistory from "./MoveHistory";
 
 const ChessGame: React.FC = () => {
   const [board, setBoard] = useState<Board>(initialBoardSetup);
+  const [lastMove, setLastMove] = useState<Move | null>(null);
   const [currentPlayer, setCurrentPlayer] = useState<"white" | "black">(
     "white"
   );
@@ -14,12 +16,16 @@ const ChessGame: React.FC = () => {
   const handleMove = (from: [number, number], to: [number, number]) => {
     const move: Move = { from, to };
 
-    if (isValidMove(move, board, currentPlayer)) {
-      setBoard(makeMove(move, board));
+    if (isValidMove(move, board, currentPlayer, lastMove)) {
+      setBoard(makeMove(move, board, lastMove));
+      setLastMove(move);
       setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
-    } else {
-      alert("Invalid move!");
     }
+  };
+
+  const resetBoard = () => {
+    setBoard(initialBoardSetup);
+    setCurrentPlayer("white");
   };
 
   return (
@@ -29,9 +35,18 @@ const ChessGame: React.FC = () => {
           <Container
             sx={{
               height: "100vh",
-              backgroundColor: "#6d4500",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              bgcolor: "#4d2e22",
+              position: "relative",
+              zIndex: "1",
             }}
-          ></Container>
+          >
+            <Button variant="contained" color="secondary" onClick={resetBoard}>
+              Reset
+            </Button>
+          </Container>
         </Grid2>
         <Grid2 size={6}>
           <Container
@@ -41,8 +56,11 @@ const ChessGame: React.FC = () => {
               justifyContent: "center",
               alignItems: "center",
               height: "100vh",
-              backgroundColor: "#5a3900",
+              backgroundImage: "url(/assets/wood.jpg)",
+              backgroundPosition: "center",
+              backgroundSize: "cover",
               boxShadow: "inset 0 0 10px 3px rgba(0, 0, 0, 0.6)",
+              userSelect: "none",
             }}
           >
             <Stack
@@ -52,7 +70,6 @@ const ChessGame: React.FC = () => {
                 alignItems: "end",
               }}
             >
-              <Button variant="outlined">Reset</Button>
               <ChessBoard board={board} onMove={handleMove} />
             </Stack>
           </Container>
@@ -61,9 +78,16 @@ const ChessGame: React.FC = () => {
           <Container
             sx={{
               height: "100vh",
-              backgroundColor: "#6d4500",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              bgcolor: "#4d2e22",
+              position: "relative",
+              zIndex: "1",
             }}
-          ></Container>
+          >
+            <MoveHistory />
+          </Container>
         </Grid2>
       </Grid2>
     </div>
