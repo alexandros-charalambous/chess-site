@@ -1,14 +1,22 @@
 import { Box } from "@mui/material";
 import React, { useState } from "react";
-import { chessNotations, pieceImages } from "./ChessLogic/chessUtils";
-import { Board, Piece } from "./ChessLogic/types";
+import { getLegalMoves } from "./ChessLogic/chessLogic";
+import { pieceImages } from "./ChessLogic/chessUtils";
+import { Board, Move, Piece } from "./ChessLogic/types";
 
 interface ChessBoardProps {
   board: Board;
+  currentPlayer: "white" | "black";
+  lastMove: Move | null;
   onMove: (from: [number, number], to: [number, number]) => void;
 }
 
-const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
+const ChessBoard: React.FC<ChessBoardProps> = ({
+  board,
+  currentPlayer,
+  lastMove,
+  onMove,
+}) => {
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
     null
   );
@@ -16,6 +24,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
     from: [number, number];
     piece: string;
   }>(null);
+  const [legalMoves, setLegalMoves] = useState<[number, number][]>([]); // To store the legal moves
 
   const getSquareColor = (row: number, col: number) => {
     return (row + col) % 2 === 0 ? "#f0d9b5" : "#b58863";
@@ -24,8 +33,12 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
   const getSquareStyle = (row: number, col: number) => {
     const isSelected =
       selectedSquare && selectedSquare[0] === row && selectedSquare[1] === col;
+    const isLegalMove = legalMoves.some(
+      (move) => move[0] === row && move[1] === col
+    );
     return {
       boxShadow: isSelected ? "0px 0px 0px 3px #ffffff inset" : "none",
+      backgroundColor: isLegalMove ? "lightgreen" : getSquareColor(row, col),
     };
   };
 
@@ -44,18 +57,33 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
       onMove(from, to);
       setSelectedPiece(null);
       setSelectedSquare(null);
+      setLegalMoves([]);
     }
   };
 
   const handleDragStart = (row: number, col: number, piece: string) => {
     setSelectedPiece({ from: [row, col], piece });
     setSelectedSquare([row, col]);
+
+    // Calculate and set the legal moves for the selected piece
+    const moves = getLegalMoves([row, col], board, currentPlayer, lastMove);
+    setLegalMoves(moves);
   };
 
   const handleSquareClick = (row: number, col: number) => {
-    const notationMap = chessNotations(row, col);
-    console.log(`Square clicked: ${notationMap}`);
-    setSelectedSquare([row, col]);
+    const piece = board[row][col];
+    if (
+      (piece?.substring(0, 1) === "w" && currentPlayer === "white") ||
+      (piece?.substring(0, 1) === "b" && currentPlayer === "black")
+    ) {
+      setSelectedPiece({ from: [row, col], piece });
+      setSelectedSquare([row, col]);
+
+      const moves = getLegalMoves([row, col], board, currentPlayer, lastMove);
+      setLegalMoves(moves);
+    } else if (selectedPiece) {
+      handleSquareDrop(row, col);
+    }
   };
 
   return (
@@ -75,7 +103,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ board, onMove }) => {
           <Box
             key={`${rowIndex}-${colIndex}`}
             sx={{
-              backgroundColor: getSquareColor(rowIndex, colIndex),
               width: "90px",
               height: "90px",
               display: "flex",

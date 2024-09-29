@@ -91,7 +91,6 @@ const pawnMove = (from: [number, number], to: [number, number], board: Board, pi
   if (lastMove !== null) {
     const lastMoveWasDoubleStepPawn = board[lastMove.to[0]][lastMove.to[1]] === (pieceColor === 'white' ? 'bP' : 'wP') && Math.abs(lastMove.from[0] - lastMove.to[0]) === 2;
     const enPassantRow = pieceColor === 'white' ? 3 : 4;
-    console.log(lastMoveWasDoubleStepPawn && from[0] === enPassantRow && to[1] === lastMove.to[1]);
     if (lastMoveWasDoubleStepPawn && from[0] === enPassantRow && to[1] === lastMove.to[1] && ((pieceColor === 'white' && to[0] === from[0] - 1) || (pieceColor === 'black' && to[0] === from[0] + 1))) return true;
   }
 
@@ -143,6 +142,27 @@ export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | '
   if (!pieceMoves[piece.substring(1,2)](move.from, move.to, board, pieceColor, lastMove)) return false;
 
   return true;
+};
+
+export const getLegalMoves = (
+  from: [number, number], 
+  board: Board, 
+  currentPlayer: 'white' | 'black', 
+  lastMove: Move | null
+): [number, number][] => {
+  const legalMoves: [number, number][] = [];
+  
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const move: Move = { from, to: [row, col] };
+
+      if (isValidMove(move, board, currentPlayer, lastMove)) {
+        legalMoves.push([row, col]);
+      }
+    }
+  }
+
+  return legalMoves;
 };
 
 export const makeMove = (move: Move, board: Board, lastMove: Move | null) => {

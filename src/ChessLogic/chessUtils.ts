@@ -1,4 +1,4 @@
-import { Board, Piece } from './types';
+import { Board } from './types';
 
 export const initialBoardSetup = (): Board => [
     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
