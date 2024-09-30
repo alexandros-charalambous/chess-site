@@ -7,7 +7,7 @@ const ChessGame: React.FC = () => {
     useChessContext();
 
   return (
-    <div>
+    <>
       <ChessBoard
         board={board}
         currentPlayer={currentPlayer}
@@ -15,7 +15,7 @@ const ChessGame: React.FC = () => {
         handleMove={handleMove}
         handleLegalMove={handleLegalMove}
       />
-    </div>
+    </>
   );
 };
 

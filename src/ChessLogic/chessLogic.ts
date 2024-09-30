@@ -6,6 +6,38 @@ const isEnemyPiece = (from: string, to: string) => {
 };
 
 const kingMove = (from: [number, number], to: [number, number], board: Board, pieceColor: string) => {
+  const currentPlayer = pieceColor === 'white' ? 'white' : 'black';
+
+  if (to[0] === from[0] && to[1] === from[1] + 2) {
+    const rookPosition = [from[0], from[1] + 3]; 
+    const rookPiece = board[rookPosition[0]][rookPosition[1]];
+    const kingMoves: [number, number][] = [
+      [from[0], from[1] + 1], 
+      to,
+    ]; 
+    if (rookPiece?.substring(1,2) === 'R' 
+      && !isKingInCheck(board, from, currentPlayer) 
+      && !isKingInCheck(board, kingMoves[0], currentPlayer) 
+      && !isKingInCheck(board, kingMoves[1], currentPlayer)) {
+      return true; 
+    }
+  }
+
+  if (to[0] === from[0] && to[1] === from[1] - 2) {
+    const rookPosition = [from[0], from[1] - 4]; 
+    const rookPiece = board[rookPosition[0]][rookPosition[1]];
+    const kingMoves: [number, number][] = [
+      [from[0], from[1] - 1], 
+      to,                          
+    ]; 
+    if (rookPiece?.substring(1,2) === 'R' 
+      && !isKingInCheck(board, from, currentPlayer) 
+      && !isKingInCheck(board, kingMoves[0], currentPlayer) 
+      && !isKingInCheck(board, kingMoves[1], currentPlayer)) {
+      return true; 
+    }
+  }
+
   return (Math.abs(from[0] - to[0]) <= 1 && Math.abs(from[1] - to[1]) <= 1);
 }
 
@@ -117,6 +149,48 @@ const pawnMove = (from: [number, number], to: [number, number], board: Board, pi
   return false;
 }
 
+const isKingInCheck = (board: Board, kingPosition: [number, number], currentPlayer: 'white' | 'black'): boolean => {
+  const enemyColor = currentPlayer === 'white' ? 'b' : 'w';
+  
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      if (piece && piece.startsWith(enemyColor)) {
+        const pieceType = piece.substring(1,2); 
+        const canMove = pieceMoves[pieceType](kingPosition, [row, col], board, enemyColor, null);
+        if (canMove) {
+          return true; 
+        }
+      }
+    }
+  } 
+  return false; 
+};
+
+const simulateMove = (board: Board, move: Move): Board => {
+  const newBoard = board.map(row => [...row]); 
+  const piece = newBoard[move.from[0]][move.from[1]];
+  
+  newBoard[move.to[0]][move.to[1]] = piece;
+  newBoard[move.from[0]][move.from[1]] = null;
+  
+  return newBoard;
+};
+
+const getKingPosition = (board: Board, currentPlayer: 'white' | 'black'): [number, number] => {
+  const kingPiece = currentPlayer === 'white' ? 'wK' : 'bK';
+  
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      if (board[row][col] === kingPiece) {
+        return [row, col];
+      }
+    }
+  }
+  
+  throw new Error(`King not found for ${currentPlayer}`);
+};
+
 const pieceMoves: { [key: string]: (from: [number, number], to: [number, number], board: Board, pieceColor: string, lastMove: Move | null) => boolean } = {
   K: (from, to, board, pieceColor) => kingMove(from, to, board, pieceColor),
   Q: (from, to, board, pieceColor) => queenMove(from, to, board, pieceColor),
@@ -126,11 +200,9 @@ const pieceMoves: { [key: string]: (from: [number, number], to: [number, number]
   P: (from, to, board, pieceColor, lastMove) => pawnMove(from, to, board, pieceColor, lastMove)
 };
 
-
 export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | 'black', lastMove: Move | null): boolean => {
   const piece = board[move.from[0]][move.from[1]];
   if (!piece) return false;
-
   if (move.from[0] === move.to[0] && move.from[1] === move.to[1]) return false;
   if (board[move.from[0]][move.from[1]]?.substring(0,1) === board[move.to[0]][move.to[1]]?.substring(0,1)) return false;
 
@@ -139,7 +211,13 @@ export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | '
   if (pieceColor !== currentPlayer) return false;
   
   if (!pieceMoves[piece.substring(1,2)]) return false;
-  if (!pieceMoves[piece.substring(1,2)](move.from, move.to, board, pieceColor, lastMove)) return false;
+  if (!pieceMoves[piece.substring(1,2)](move.from, move.to, board, currentPlayer, lastMove)) return false;
+
+  const simulatedBoard = simulateMove(board, move);
+  const kingPosition = getKingPosition(simulatedBoard, currentPlayer);
+  if (isKingInCheck(simulatedBoard, kingPosition, currentPlayer)) {
+    return false;
+  }
 
   return true;
 };
@@ -155,29 +233,38 @@ export const getLegalMoves = (
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const move: Move = { from, to: [row, col] };
+      if (isValidMove(move, board, currentPlayer, lastMove)) {          
+        const simulatedBoard = simulateMove(board, move);
 
-      if (isValidMove(move, board, currentPlayer, lastMove)) {
-        legalMoves.push([row, col]);
+        if (!isKingInCheck(simulatedBoard, getKingPosition(simulatedBoard, currentPlayer), currentPlayer)) {
+          legalMoves.push([row, col]);
+        }
       }
     }
   }
-
   return legalMoves;
 };
 
 export const makeMove = (move: Move, board: Board, lastMove: Move | null) => {
   const newBoard = board.map(row => [...row]);
   const piece = newBoard[move.from[0]][move.from[1]];
-
-  if (piece?.substring(1,2) === 'P') {
-    const forward = piece?.substring(0,1) === 'w' ? -1 : 1;
-    
-    if (Math.abs(move.from[1] - move.to[1]) === 1 && newBoard[move.to[0]][move.to[1]] === null) {
-      newBoard[move.to[0] - forward][move.to[1]] = null;
-    }
+  
+  if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] + 2) {
+    newBoard[move.to[0]][move.to[1]] = piece;
+    newBoard[move.from[0]][move.from[1]] = null;
+    newBoard[move.from[0]][move.to[1] - 1] = newBoard[move.from[0]][move.from[1] + 3];
+    newBoard[move.from[0]][move.from[1] + 3] = null;
+  }
+  else if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] - 2) {
+    newBoard[move.to[0]][move.to[1]] = piece;
+    newBoard[move.from[0]][move.from[1]] = null;
+    newBoard[move.from[0]][move.to[1] + 1] = newBoard[move.from[0]][move.from[1] - 4];
+    newBoard[move.from[0]][move.from[1] - 4] = null;
+  }
+  else {
+    newBoard[move.to[0]][move.to[1]] = piece;
+    newBoard[move.from[0]][move.from[1]] = null;
   }
 
-  newBoard[move.to[0]][move.to[1]] = piece;
-  newBoard[move.from[0]][move.from[1]] = null;
   return newBoard;
 };

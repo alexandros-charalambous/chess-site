@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
-import { Board, Move } from "./ChessLogic/types";
+import { Board, Move, MoveHistory } from "./ChessLogic/types";
 import { getLegalMoves, isValidMove, makeMove } from "./ChessLogic/chessLogic";
-import { initialBoardSetup } from "./ChessLogic/chessUtils";
+import { initialBoardSetup, initialGameState } from "./ChessLogic/chessUtils";
 
 interface ChessContextProps {
   board: Board;
@@ -11,6 +11,7 @@ interface ChessContextProps {
   handleMove: (from: [number, number], to: [number, number]) => void;
   handleLegalMove: (from: [number, number]) => void;
   resetBoard: () => void;
+  moveHistory: MoveHistory[];
 }
 
 const ChessContext = createContext<ChessContextProps | undefined>(undefined);
@@ -32,16 +33,51 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [legalMoves, setLegalMoves] = useState<[number, number][]>([]);
+  const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
+  const [castlePieceMoved, setCastlePieceMoved] = useState(initialGameState);
 
   const handleMove = (from: [number, number], to: [number, number]) => {
     const move: Move = { from, to };
+    const piece = board[from[0]][from[1]];
+    const capturedPiece = board[to[0]][to[1]];
 
     if (isValidMove(move, board, currentPlayer, lastMove)) {
       setBoard(makeMove(move, board, lastMove));
       setLastMove(move);
       setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
       setLegalMoves([]);
+      updateMovementStatus(move, castlePieceMoved);
+      setMoveHistory((prevHistory) => [
+        ...prevHistory,
+        {
+          move,
+          piece,
+          capturedPiece: capturedPiece || undefined,
+        },
+      ]);
     }
+  };
+
+  const updateMovementStatus = (
+    move: Move,
+    hasMoved: {
+      white: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
+      black: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
+    }
+  ) => {
+    const piece = board[move.from[0]][move.from[1]];
+    const color = piece?.substring(0) === "w" ? "white" : "black";
+
+    if (piece?.substring(1) === "K") {
+      hasMoved[color].king = true;
+    } else if (piece?.substring(1) === "R") {
+      if (move.from[1] === 0) {
+        hasMoved[color].rookQueenside = true;
+      } else if (move.from[1] === 7) {
+        hasMoved[color].rookKingside = true;
+      }
+    }
+    setCastlePieceMoved(hasMoved);
   };
 
   const handleLegalMove = (from: [number, number]) => {
@@ -53,6 +89,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setBoard(initialBoardSetup);
     setCurrentPlayer("white");
     setLegalMoves([]);
+    setMoveHistory([]);
+    setCastlePieceMoved(initialGameState);
   };
 
   const value = {
@@ -63,14 +101,10 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     handleMove,
     handleLegalMove,
     resetBoard,
+    moveHistory,
   };
 
   return (
     <ChessContext.Provider value={value}>{children}</ChessContext.Provider>
   );
-};
-
-// Custom hook to use the ChessContext
-export const useChess = () => {
-  return useContext(ChessContext);
 };

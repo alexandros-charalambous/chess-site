@@ -1,7 +1,7 @@
 import { Container, Grid2, Stack } from "@mui/material";
 import { ChessProvider } from "./ChessContext";
 import ChessGame from "./ChessGame";
-import MoveHistory from "./MoveHistory";
+import MoveHistory from "./MoveHistoryPanel";
 import ResetButton from "./ResetButton";
 
 function App() {

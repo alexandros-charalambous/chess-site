@@ -6,3 +6,9 @@ export type Move = {
   from: [number, number];
   to: [number, number];
 }
+
+export type MoveHistory = {
+  move: Move,
+  piece: Piece; 
+  capturedPiece?: Piece;
+}
