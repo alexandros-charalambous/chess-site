@@ -1,7 +1,9 @@
-import { Box } from "@mui/material/";
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
+import { Box, colors } from "@mui/material/";
 import React, { useState } from "react";
 import { pieceImages } from "./ChessLogic/chessUtils";
 import { Board, Piece } from "./ChessLogic/types";
+import { Circle } from "@mui/icons-material";
 
 interface ChessBoardProps {
   board: Board;
@@ -35,14 +37,18 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
       selectedSquare &&
       selectedSquare[0] === from[0] &&
       selectedSquare[1] === from[1];
+    return {
+      boxShadow: isSelected ? "0px 0px 0px 6px #ffffff inset" : "none",
+      backgroundColor: getSquareColor([from[0], from[1]]),
+    };
+  };
+
+  const getIconStyle = (from: [number, number]) => {
     const isLegalMove = legalMoves.some(
       (move) => move[0] === from[0] && move[1] === from[1]
     );
     return {
-      boxShadow: isSelected ? "0px 0px 0px 3px #ffffff inset" : "none",
-      backgroundColor: isLegalMove
-        ? "lightgreen"
-        : getSquareColor([from[0], from[1]]),
+      display: isLegalMove ? "flex" : "none",
     };
   };
 
@@ -82,6 +88,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
 
       handleLegalMove([from[0], from[1]]);
     } else if (selectedPiece) {
+      handleLegalMove([from[0], from[1]]);
       handleSquareDrop([from[0], from[1]]);
     }
   };
@@ -115,13 +122,33 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
             onDragOver={(e) => e.preventDefault()}
             onClick={() => handleSquareClick([rowIndex, colIndex])}
           >
-            {piece && (
-              <img
-                src={pieceImages[piece]}
-                alt={piece}
-                draggable
-                onDragStart={() => handleDragStart([rowIndex, colIndex], piece)}
-                style={{ ...getImageStyle(piece) }}
+            {piece ? (
+              <>
+                <img
+                  src={pieceImages[piece]}
+                  alt={piece}
+                  draggable
+                  onDragStart={() =>
+                    handleDragStart([rowIndex, colIndex], piece)
+                  }
+                  style={{ ...getImageStyle(piece) }}
+                />
+                <CircleOutlinedIcon
+                  sx={{
+                    color: "#00000040",
+                    position: "absolute",
+                    fontSize: "108px",
+                    ...getIconStyle([rowIndex, colIndex]),
+                  }}
+                />
+              </>
+            ) : (
+              <Circle
+                sx={{
+                  color: "#00000040",
+                  fontSize: "36px",
+                  ...getIconStyle([rowIndex, colIndex]),
+                }}
               />
             )}
           </Box>

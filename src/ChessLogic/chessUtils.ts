@@ -1,4 +1,4 @@
-import { Board } from './types';
+import { Board, Move } from './types';
 
 export const initialBoardSetup = (): Board => [
     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -10,31 +10,6 @@ export const initialBoardSetup = (): Board => [
     ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
     ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
   ];
-
-  
-// export const initialBoardSetup = (): Board => [
-//   ['bR', null, null, null, 'bK', null, null, 'bR'],
-//   [null, null, null, null, null, null, null, null],
-//   [null, null, null, null, null, null, null, null],
-//   [null, null, null, null, null, null, null, null],
-//   [null, null, null, null, null, null, null, null],
-//   [null, null, null, null, null, null, null, null],
-//   [null, null, null, null, null, null, null, null],
-//   ['wR', null, null, null, 'wK', null, null, 'wR'],
-// ];
-
-export const initialGameState = {
-    white: {
-      king: false,
-      rookKingside: false,
-      rookQueenside: false,
-    },
-    black: {
-      king: false,
-      rookKingside: false,
-      rookQueenside: false,
-    },
-  };
 
 export const pieceImages: { [key: string]: string } = {
     wP: "/assets/white-pawn.png",
@@ -63,3 +38,4 @@ export const chessNotations = (row: number, col: number) => {
   }
   return notationMap.get(`${row},${col}`);
 };
+

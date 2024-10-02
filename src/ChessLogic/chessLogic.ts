@@ -5,39 +5,45 @@ const isEnemyPiece = (from: string, to: string) => {
   return (from !== to);
 };
 
-const kingMove = (from: [number, number], to: [number, number], board: Board, pieceColor: string) => {
+const kingMove = (from: [number, number], to: [number, number], board: Board, pieceColor: string, castleState: [boolean, boolean, boolean]) => {
   const currentPlayer = pieceColor === 'white' ? 'white' : 'black';
 
+  //King Side castle
   if (to[0] === from[0] && to[1] === from[1] + 2) {
-    const rookPosition = [from[0], from[1] + 3]; 
-    const rookPiece = board[rookPosition[0]][rookPosition[1]];
-    const kingMoves: [number, number][] = [
-      [from[0], from[1] + 1], 
-      to,
-    ]; 
-    if (rookPiece?.substring(1,2) === 'R' 
-      && !isKingInCheck(board, from, currentPlayer) 
-      && !isKingInCheck(board, kingMoves[0], currentPlayer) 
-      && !isKingInCheck(board, kingMoves[1], currentPlayer)) {
-      return true; 
+    if (!castleState[0] && !castleState[1]) {
+      const rookPosition = [from[0], from[1] + 3]; 
+      const rookPiece = board[rookPosition[0]][rookPosition[1]];
+      const kingMoves: [number, number][] = [
+        [from[0], from[1] + 1], 
+        to,
+      ]; 
+      if (rookPiece?.substring(1,2) === 'R' 
+        && !isKingInCheck(board, from, currentPlayer, castleState) 
+        && !isKingInCheck(board, kingMoves[0], currentPlayer, castleState) 
+        && !isKingInCheck(board, kingMoves[1], currentPlayer, castleState)) {
+        return true; 
+      }
     }
   }
 
+  //Queen Side castle
   if (to[0] === from[0] && to[1] === from[1] - 2) {
-    const rookPosition = [from[0], from[1] - 4]; 
-    const rookPiece = board[rookPosition[0]][rookPosition[1]];
-    const kingMoves: [number, number][] = [
-      [from[0], from[1] - 1], 
-      to,                          
-    ]; 
-    if (rookPiece?.substring(1,2) === 'R' 
-      && !isKingInCheck(board, from, currentPlayer) 
-      && !isKingInCheck(board, kingMoves[0], currentPlayer) 
-      && !isKingInCheck(board, kingMoves[1], currentPlayer)) {
-      return true; 
+    if (!castleState[0] && !castleState[2]) {
+      const rookPosition = [from[0], from[1] - 4]; 
+      const rookPiece = board[rookPosition[0]][rookPosition[1]];
+      const kingMoves: [number, number][] = [
+        [from[0], from[1] - 1], 
+        to,                          
+      ]; 
+      if (rookPiece?.substring(1,2) === 'R' 
+        && !isKingInCheck(board, from, currentPlayer, castleState) 
+        && !isKingInCheck(board, kingMoves[0], currentPlayer, castleState) 
+        && !isKingInCheck(board, kingMoves[1], currentPlayer ,castleState)) {
+        return true; 
+      }
     }
   }
-
+  
   return (Math.abs(from[0] - to[0]) <= 1 && Math.abs(from[1] - to[1]) <= 1);
 }
 
@@ -149,7 +155,16 @@ const pawnMove = (from: [number, number], to: [number, number], board: Board, pi
   return false;
 }
 
-const isKingInCheck = (board: Board, kingPosition: [number, number], currentPlayer: 'white' | 'black'): boolean => {
+const pieceMoves: { [key: string]: (from: [number, number], to: [number, number], board: Board, pieceColor: string, lastMove: Move | null, castleState: [boolean, boolean, boolean]) => boolean } = {
+  K: (from, to, board, pieceColor, lastMove, castleState) => kingMove(from, to, board, pieceColor, castleState),
+  Q: (from, to, board, pieceColor) => queenMove(from, to, board, pieceColor),
+  R: (from, to, board, pieceColor) => rookMove(from, to, board, pieceColor), 
+  B: (from, to, board, pieceColor) => bishopMove(from, to, board, pieceColor),
+  N: (from, to, board, pieceColor) => knightMove(from, to, board, pieceColor),
+  P: (from, to, board, pieceColor, lastMove) => pawnMove(from, to, board, pieceColor, lastMove)
+};
+
+const isKingInCheck = (board: Board, kingPosition: [number, number], currentPlayer: 'white' | 'black', castleState: [boolean, boolean, boolean]): boolean => {
   const enemyColor = currentPlayer === 'white' ? 'b' : 'w';
   
   for (let row = 0; row < 8; row++) {
@@ -157,7 +172,7 @@ const isKingInCheck = (board: Board, kingPosition: [number, number], currentPlay
       const piece = board[row][col];
       if (piece && piece.startsWith(enemyColor)) {
         const pieceType = piece.substring(1,2); 
-        const canMove = pieceMoves[pieceType](kingPosition, [row, col], board, enemyColor, null);
+        const canMove = pieceMoves[pieceType](kingPosition, [row, col], board, enemyColor, null, castleState);
         if (canMove) {
           return true; 
         }
@@ -191,16 +206,7 @@ const getKingPosition = (board: Board, currentPlayer: 'white' | 'black'): [numbe
   throw new Error(`King not found for ${currentPlayer}`);
 };
 
-const pieceMoves: { [key: string]: (from: [number, number], to: [number, number], board: Board, pieceColor: string, lastMove: Move | null) => boolean } = {
-  K: (from, to, board, pieceColor) => kingMove(from, to, board, pieceColor),
-  Q: (from, to, board, pieceColor) => queenMove(from, to, board, pieceColor),
-  R: (from, to, board, pieceColor) => rookMove(from, to, board, pieceColor), 
-  B: (from, to, board, pieceColor) => bishopMove(from, to, board, pieceColor),
-  N: (from, to, board, pieceColor) => knightMove(from, to, board, pieceColor),
-  P: (from, to, board, pieceColor, lastMove) => pawnMove(from, to, board, pieceColor, lastMove)
-};
-
-export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | 'black', lastMove: Move | null): boolean => {
+export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | 'black', lastMove: Move | null, castleState: [boolean, boolean, boolean]): boolean => {
   const piece = board[move.from[0]][move.from[1]];
   if (!piece) return false;
   if (move.from[0] === move.to[0] && move.from[1] === move.to[1]) return false;
@@ -211,11 +217,11 @@ export const isValidMove = (move: Move, board: Board, currentPlayer: 'white' | '
   if (pieceColor !== currentPlayer) return false;
   
   if (!pieceMoves[piece.substring(1,2)]) return false;
-  if (!pieceMoves[piece.substring(1,2)](move.from, move.to, board, currentPlayer, lastMove)) return false;
+  if (!pieceMoves[piece.substring(1,2)](move.from, move.to, board, currentPlayer, lastMove, castleState)) return false;
 
   const simulatedBoard = simulateMove(board, move);
   const kingPosition = getKingPosition(simulatedBoard, currentPlayer);
-  if (isKingInCheck(simulatedBoard, kingPosition, currentPlayer)) {
+  if (isKingInCheck(simulatedBoard, kingPosition, currentPlayer, castleState)) {
     return false;
   }
 
@@ -226,17 +232,18 @@ export const getLegalMoves = (
   from: [number, number], 
   board: Board, 
   currentPlayer: 'white' | 'black', 
-  lastMove: Move | null
+  lastMove: Move | null,
+  castleState: [boolean, boolean, boolean]
 ): [number, number][] => {
   const legalMoves: [number, number][] = [];
   
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
       const move: Move = { from, to: [row, col] };
-      if (isValidMove(move, board, currentPlayer, lastMove)) {          
+      if (isValidMove(move, board, currentPlayer, lastMove, castleState)) {          
         const simulatedBoard = simulateMove(board, move);
 
-        if (!isKingInCheck(simulatedBoard, getKingPosition(simulatedBoard, currentPlayer), currentPlayer)) {
+        if (!isKingInCheck(simulatedBoard, getKingPosition(simulatedBoard, currentPlayer), currentPlayer, castleState)) {
           legalMoves.push([row, col]);
         }
       }
@@ -260,6 +267,15 @@ export const makeMove = (move: Move, board: Board, lastMove: Move | null) => {
     newBoard[move.from[0]][move.from[1]] = null;
     newBoard[move.from[0]][move.to[1] + 1] = newBoard[move.from[0]][move.from[1] - 4];
     newBoard[move.from[0]][move.from[1] - 4] = null;
+  }
+  else if (piece?.substring(1,2) === 'P') {
+    const forward = piece?.substring(0,1) === 'w' ? -1 : 1;
+    
+    if (Math.abs(move.from[1] - move.to[1]) === 1 && newBoard[move.to[0]][move.to[1]] === null) {
+      newBoard[move.to[0] - forward][move.to[1]] = null;
+    }
+    newBoard[move.to[0]][move.to[1]] = piece;
+    newBoard[move.from[0]][move.from[1]] = null;
   }
   else {
     newBoard[move.to[0]][move.to[1]] = piece;

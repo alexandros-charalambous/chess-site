@@ -5,7 +5,7 @@ import { chessNotations } from "./ChessLogic/chessUtils";
 import { MoveHistory, Piece } from "./ChessLogic/types";
 
 const MoveHistoryPanel: React.FC = () => {
-  const { moveHistory } = useChessContext();
+  const { moveHistory, FENString } = useChessContext();
 
   const getPieceNotation = (piece: Piece) => {
     const pieceType = piece?.substring(1);
@@ -62,6 +62,8 @@ const MoveHistoryPanel: React.FC = () => {
         <Typography color="#E3D026">
           {formatMoveHistoryToAlgebraic(moveHistory)}
         </Typography>
+
+        <Typography color="#E3D026">{FENString}</Typography>
       </Box>
     </>
   );
