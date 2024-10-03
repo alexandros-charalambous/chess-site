@@ -8,7 +8,8 @@ export type Move = {
 }
 
 export type MoveHistory = {
-  move: Move,
+  move: Move;
+  board: Piece[][];
   piece: Piece; 
   capturedPiece?: Piece;
 }

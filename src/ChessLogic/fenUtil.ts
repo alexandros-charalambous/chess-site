@@ -84,6 +84,7 @@ export const boardToFEN = (
     }  
     return "";
   }
+
   
   export function getHalfMoveClock(piece: string | null, isCapture: boolean) {
     if (piece?.substring(1, 2) === "P" || isCapture) {

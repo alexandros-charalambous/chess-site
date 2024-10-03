@@ -1,9 +1,9 @@
+import { Circle } from "@mui/icons-material";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
-import { Box, colors } from "@mui/material/";
+import { Box } from "@mui/material/";
 import React, { useState } from "react";
 import { pieceImages } from "./ChessLogic/chessUtils";
 import { Board, Piece } from "./ChessLogic/types";
-import { Circle } from "@mui/icons-material";
 
 interface ChessBoardProps {
   board: Board;
@@ -32,7 +32,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
     return (from[0] + from[1]) % 2 === 0 ? "#f0d9b5" : "#b58863";
   };
 
-  const getSquareStyle = (from: [number, number]) => {
+  const getSelectedStyle = (from: [number, number]) => {
     const isSelected =
       selectedSquare &&
       selectedSquare[0] === from[0] &&
@@ -116,7 +116,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
               justifyContent: "center",
               alignItems: "center",
               fontSize: "30px",
-              ...getSquareStyle([rowIndex, colIndex]),
+              ...getSelectedStyle([rowIndex, colIndex]),
             }}
             onDrop={() => handleSquareDrop([rowIndex, colIndex])}
             onDragOver={(e) => e.preventDefault()}

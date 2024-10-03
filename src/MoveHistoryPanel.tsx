@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
 import { useChessContext } from "./ChessContext";
 import { chessNotations } from "./ChessLogic/chessUtils";
@@ -41,6 +41,8 @@ const MoveHistoryPanel: React.FC = () => {
         moveString = `${pieceNotation}${fromNotation}x${toNotation}`;
       }
 
+      console.log(moveHistory);
+
       return (
         <>
           {index === 0 ? `${index}.${moveString}` : ` ${index}.${moveString}`}
@@ -51,20 +53,31 @@ const MoveHistoryPanel: React.FC = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          width: "20vw",
-          height: "80vh",
-          borderRadius: 1,
-          bgcolor: "#00000042",
-        }}
-      >
-        <Typography color="#E3D026">
-          {formatMoveHistoryToAlgebraic(moveHistory)}
-        </Typography>
-
-        <Typography color="#E3D026">{FENString}</Typography>
-      </Box>
+      <Stack spacing={1}>
+        <Box
+          sx={{
+            width: "20vw",
+            padding: 2,
+            bgcolor: "#0000002e",
+            boxShadow: "0 3px 4px 0px #000000",
+          }}
+        >
+          <Typography color="#ffffff">{FENString}</Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "20vw",
+            height: "60vh",
+            padding: 2,
+            bgcolor: "#0000002e",
+            boxShadow: "0 3px 4px 0px #000000",
+          }}
+        >
+          <Typography color="#ffffff">
+            {formatMoveHistoryToAlgebraic(moveHistory)}
+          </Typography>
+        </Box>
+      </Stack>
     </>
   );
 };

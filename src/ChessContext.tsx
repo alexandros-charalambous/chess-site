@@ -70,7 +70,6 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     const move: Move = { from, to };
     const piece = board[from[0]][from[1]];
     const capturedPiece = board[to[0]][to[1]];
-    console.log(currentPlayer);
 
     if (isValidMove(move, board, currentPlayer, lastMove, canCastle)) {
       const newBoard = makeMove(move, board, lastMove);
@@ -92,6 +91,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
         ...prevHistory,
         {
           move,
+          board,
           piece,
           capturedPiece: capturedPiece || undefined,
         },
