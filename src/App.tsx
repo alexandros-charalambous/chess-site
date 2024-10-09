@@ -40,7 +40,6 @@ function App() {
               }}
             >
               <Stack
-                spacing={2}
                 sx={{
                   justifyContent: "center",
                   alignItems: "end",

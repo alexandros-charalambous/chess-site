@@ -1,0 +1,3 @@
+fix move history .
+add promotion
+add start game and checkmate

@@ -20,6 +20,7 @@ interface ChessContextProps {
   handleLegalMove: (from: [number, number]) => void;
   resetBoard: () => void;
   moveHistory: MoveHistory[];
+  loadHistoryBoard: (board: Board) => void;
   FENString: string | undefined;
 }
 
@@ -49,13 +50,27 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   };
 
+  const initialMoveHistory: MoveHistory[] = [
+    {
+      move: {
+        from: [0, 0],
+        to: [0, 0],
+      },
+      board: initialBoardSetup().map((row) => [...row]),
+      piece: null,
+      capturedPiece: undefined,
+    },
+  ];
+
   const [board, setBoard] = useState<Board>(initialBoardSetup);
   const [currentPlayer, setCurrentPlayer] = useState<"white" | "black">(
     "white"
   );
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [legalMoves, setLegalMoves] = useState<[number, number][]>([]);
-  const [moveHistory, setMoveHistory] = useState<MoveHistory[]>([]);
+  const [moveHistory, setMoveHistory] =
+    useState<MoveHistory[]>(initialMoveHistory);
+  const [currentBoard, setCurrentBoard] = useState<Board>(initialBoardSetup);
   const [castleState, setCastleState] = useState(initialCastleState);
   const canCastle: [boolean, boolean, boolean] = [
     castleState[currentPlayer].king,
@@ -65,21 +80,23 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const [FENString, setFENString] = useState<string>(
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   );
+  const deepCopyBoard = (board: Board): Board => {
+    return board.map((row) => [...row]);
+  };
 
   const handleMove = (from: [number, number], to: [number, number]) => {
     const move: Move = { from, to };
     const piece = board[from[0]][from[1]];
     const capturedPiece = board[to[0]][to[1]];
-
     if (isValidMove(move, board, currentPlayer, lastMove, canCastle)) {
-      const newBoard = makeMove(move, board, lastMove);
-      setBoard(newBoard);
+      setBoard(makeMove(move, board));
+      setCurrentBoard(board);
       setLastMove(move);
       setLegalMoves([]);
       updatecastleState(move, castleState);
       setFENString(
         boardToFEN(
-          newBoard,
+          board,
           currentPlayer,
           getCastlingAvailability(castleState),
           getEnPassantTarget(move, board[from[0]][from[1]]),
@@ -87,15 +104,15 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
           getFullMoveNumber(currentPlayer)
         )
       );
-      setMoveHistory((prevHistory) => [
-        ...prevHistory,
-        {
+      setMoveHistory((prevHistory) => {
+        const newMove = {
           move,
-          board,
+          board: deepCopyBoard(board),
           piece,
           capturedPiece: capturedPiece || undefined,
-        },
-      ]);
+        };
+        return [...prevHistory, newMove];
+      });
       setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
     }
   };
@@ -126,22 +143,23 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     if (board[from[0]][from[1]] === null) {
       setLegalMoves([]);
     } else {
-      const moves = getLegalMoves(
-        from,
-        board,
-        currentPlayer,
-        lastMove,
-        canCastle
+      setLegalMoves(
+        getLegalMoves(from, board, currentPlayer, lastMove, canCastle)
       );
-      setLegalMoves(moves);
     }
   };
 
+  const loadHistoryBoard = (board: Board) => {
+    setBoard(deepCopyBoard(board));
+    setLegalMoves([]);
+  };
+
   const resetBoard = () => {
-    setBoard(initialBoardSetup);
+    setBoard(initialBoardSetup());
+    setCurrentBoard(initialBoardSetup);
     setCurrentPlayer("white");
     setLegalMoves([]);
-    setMoveHistory([]);
+    setMoveHistory(initialMoveHistory);
     setCastleState(initialCastleState);
     setFENString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     resetFENCounters();
@@ -156,6 +174,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     handleLegalMove,
     resetBoard,
     moveHistory,
+    loadHistoryBoard,
     FENString,
   };
 

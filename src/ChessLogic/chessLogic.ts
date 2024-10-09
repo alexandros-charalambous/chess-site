@@ -252,8 +252,8 @@ export const getLegalMoves = (
   return legalMoves;
 };
 
-export const makeMove = (move: Move, board: Board, lastMove: Move | null) => {
-  const newBoard = board.map(row => [...row]);
+export const makeMove = (move: Move, board: Board) => {
+  const newBoard = board;
   const piece = newBoard[move.from[0]][move.from[1]];
   
   if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] + 2) {

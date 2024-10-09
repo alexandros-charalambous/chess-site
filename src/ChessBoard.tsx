@@ -2,24 +2,13 @@ import { Circle } from "@mui/icons-material";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { Box } from "@mui/material/";
 import React, { useState } from "react";
+import { useChessContext } from "./ChessContext";
 import { pieceImages } from "./ChessLogic/chessUtils";
-import { Board, Piece } from "./ChessLogic/types";
 
-interface ChessBoardProps {
-  board: Board;
-  currentPlayer: "white" | "black";
-  legalMoves: [number, number][];
-  handleMove: (from: [number, number], to: [number, number]) => void;
-  handleLegalMove: (from: [number, number]) => void;
-}
+const ChessBoard: React.FC = () => {
+  const { board, currentPlayer, legalMoves, handleMove, handleLegalMove } =
+    useChessContext();
 
-const ChessBoard: React.FC<ChessBoardProps> = ({
-  board,
-  currentPlayer,
-  legalMoves,
-  handleMove,
-  handleLegalMove,
-}) => {
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
     null
   );
@@ -28,35 +17,19 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
     piece: string;
   }>(null);
 
+  const isLegalMove = (from: [number, number]) =>
+    legalMoves.some((move) => move[0] === from[0] && move[1] === from[1]);
+
   const getSquareColor = (from: [number, number]) => {
     return (from[0] + from[1]) % 2 === 0 ? "#f0d9b5" : "#b58863";
   };
 
-  const getSelectedStyle = (from: [number, number]) => {
-    const isSelected =
+  const isSelected = (from: [number, number]) => {
+    return (
       selectedSquare &&
       selectedSquare[0] === from[0] &&
-      selectedSquare[1] === from[1];
-    return {
-      boxShadow: isSelected ? "0px 0px 0px 6px #ffffff inset" : "none",
-      backgroundColor: getSquareColor([from[0], from[1]]),
-    };
-  };
-
-  const getIconStyle = (from: [number, number]) => {
-    const isLegalMove = legalMoves.some(
-      (move) => move[0] === from[0] && move[1] === from[1]
+      selectedSquare[1] === from[1]
     );
-    return {
-      display: isLegalMove ? "flex" : "none",
-    };
-  };
-
-  const getImageStyle = (piece: Piece) => {
-    return {
-      width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
-      height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
-    };
   };
 
   const handleSquareDrop = (from: [number, number]) => {
@@ -103,6 +76,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
         justifyContent: "center",
         alignItems: "center",
         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.6)",
+        userSelect: "none",
       }}
     >
       {board.map((row, rowIndex) =>
@@ -116,7 +90,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
               justifyContent: "center",
               alignItems: "center",
               fontSize: "30px",
-              ...getSelectedStyle([rowIndex, colIndex]),
+              backgroundColor: getSquareColor([rowIndex, colIndex]),
+              boxShadow: isSelected([rowIndex, colIndex])
+                ? "0px 0px 0px 6px #ffffff inset"
+                : "none",
             }}
             onDrop={() => handleSquareDrop([rowIndex, colIndex])}
             onDragOver={(e) => e.preventDefault()}
@@ -131,23 +108,28 @@ const ChessBoard: React.FC<ChessBoardProps> = ({
                   onDragStart={() =>
                     handleDragStart([rowIndex, colIndex], piece)
                   }
-                  style={{ ...getImageStyle(piece) }}
+                  style={{
+                    width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+                    height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+                  }}
                 />
                 <CircleOutlinedIcon
                   sx={{
-                    color: "#00000040",
                     position: "absolute",
                     fontSize: "108px",
-                    ...getIconStyle([rowIndex, colIndex]),
+                    display: isLegalMove([rowIndex, colIndex])
+                      ? "flex"
+                      : "none",
+                    color: "#0000005e",
                   }}
                 />
               </>
             ) : (
               <Circle
                 sx={{
-                  color: "#00000040",
                   fontSize: "36px",
-                  ...getIconStyle([rowIndex, colIndex]),
+                  display: isLegalMove([rowIndex, colIndex]) ? "flex" : "none",
+                  color: "#0000005e",
                 }}
               />
             )}
