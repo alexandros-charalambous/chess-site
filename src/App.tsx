@@ -39,14 +39,7 @@ function App() {
                 userSelect: "none",
               }}
             >
-              <Stack
-                sx={{
-                  justifyContent: "center",
-                  alignItems: "end",
-                }}
-              >
-                <ChessGame />
-              </Stack>
+              <ChessGame />
             </Container>
           </Grid2>
           <Grid2 size={3}>

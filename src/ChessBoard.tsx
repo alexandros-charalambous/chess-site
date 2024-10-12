@@ -16,6 +16,7 @@ const ChessBoard: React.FC = () => {
     from: [number, number];
     piece: string;
   }>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const isLegalMove = (from: [number, number]) =>
     legalMoves.some((move) => move[0] === from[0] && move[1] === from[1]);
@@ -40,12 +41,15 @@ const ChessBoard: React.FC = () => {
       handleMove(selectedPieceFrom, to);
       setSelectedPiece(null);
       setSelectedSquare(null);
+      setIsDragging(false);
     }
   };
 
   const handleDragStart = (from: [number, number], piece: string) => {
     setSelectedPiece({ from: [from[0], from[1]], piece });
     setSelectedSquare([from[0], from[1]]);
+
+    setIsDragging(true);
 
     handleLegalMove([from[0], from[1]]);
   };
@@ -111,6 +115,7 @@ const ChessBoard: React.FC = () => {
                   style={{
                     width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
                     height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+                    cursor: isDragging ? "grabbing" : "grab",
                   }}
                 />
                 <CircleOutlinedIcon
