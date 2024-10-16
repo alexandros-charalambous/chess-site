@@ -1,5 +1,5 @@
 import React from "react";
-import ChessBoard from "./ChessBoard";
+import ChessBoard from "./components/ChessBoard";
 import { Stack } from "@mui/material";
 
 const ChessGame: React.FC = () => {

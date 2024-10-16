@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
-import { getLegalMoves, isValidMove, makeMove } from "./ChessLogic/chessLogic";
-import { initialBoardSetup } from "./ChessLogic/chessUtils";
+import { getLegalMoves, isValidMove, makeMove } from "./chessLogic";
+import { initialBoardSetup } from "./chessUtils";
 import {
   boardToFEN,
   getCastlingAvailability,
@@ -8,8 +8,8 @@ import {
   getFullMoveNumber,
   getHalfMoveClock,
   resetFENCounters,
-} from "./ChessLogic/fenUtil";
-import { Board, Move, MoveHistory } from "./ChessLogic/types";
+} from "./fenUtil";
+import { Board, Move, MoveHistory } from "./types";
 
 interface ChessContextProps {
   board: Board;

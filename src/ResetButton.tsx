@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { useChessContext } from "./ChessContext";
+import { useChessContext } from "./ChessLogic/ChessContext";
 
 const ResetButton: React.FC = () => {
   const { resetBoard } = useChessContext();

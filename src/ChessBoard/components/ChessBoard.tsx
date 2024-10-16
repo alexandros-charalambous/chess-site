@@ -2,8 +2,8 @@ import { Circle } from "@mui/icons-material";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { Box } from "@mui/material/";
 import React, { useState } from "react";
-import { useChessContext } from "./ChessContext";
-import { pieceImages } from "./ChessLogic/chessUtils";
+import { useChessContext } from "../../ChessLogic/ChessContext";
+import { pieceImages } from "../../ChessLogic/chessUtils";
 
 const ChessBoard: React.FC = () => {
   const { board, currentPlayer, legalMoves, handleMove, handleLegalMove } =

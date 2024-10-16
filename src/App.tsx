@@ -1,8 +1,8 @@
-import { Container, Grid2, Stack } from "@mui/material";
-import { ChessProvider } from "./ChessContext";
-import ChessGame from "./ChessGame";
-import MoveHistory from "./MoveHistoryPanel";
+import { Container, Grid2 } from "@mui/material";
+import { ChessProvider } from "./ChessLogic/ChessContext";
+import ChessGame from "./ChessBoard/ChessGame";
 import ResetButton from "./ResetButton";
+import RightPanel from "./RightPanel/RightPanel";
 
 function App() {
   return (
@@ -54,7 +54,7 @@ function App() {
                 zIndex: "1",
               }}
             >
-              <MoveHistory />
+              <RightPanel />
             </Container>
           </Grid2>
         </Grid2>
