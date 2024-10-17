@@ -8,7 +8,6 @@ const RightPanel: React.FC = () => {
   return (
     <>
       <Stack spacing={1}>
-        <FENBox />
         <Box
           sx={{
             boxShadow: "0 3px 4px 0px #000000",
@@ -22,6 +21,7 @@ const RightPanel: React.FC = () => {
             </Grid2>
           </Stack>
         </Box>
+        <FENBox />
       </Stack>
     </>
   );

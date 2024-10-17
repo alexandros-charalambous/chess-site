@@ -21,7 +21,7 @@ interface ChessContextProps {
   resetBoard: () => void;
   moveHistory: MoveHistory[];
   loadHistoryBoard: (board: Board) => void;
-  FENString: string | undefined;
+  FENString: string;
 }
 
 const ChessContext = createContext<ChessContextProps | undefined>(undefined);
