@@ -88,8 +88,8 @@ const ChessBoard: React.FC = () => {
           <Box
             key={`${rowIndex}-${colIndex}`}
             sx={{
-              width: "90px",
-              height: "90px",
+              width: 90,
+              height: 90,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
