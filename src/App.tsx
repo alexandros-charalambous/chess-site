@@ -9,7 +9,7 @@ function App() {
     <div style={{ height: "100%", width: "100%", position: "fixed" }}>
       <ChessProvider>
         <Grid2 container>
-          <Grid2 size={3}>
+          <Grid2 size={1}>
             <Container
               sx={{
                 height: "100vh",
@@ -24,7 +24,7 @@ function App() {
               <ResetButton />
             </Container>
           </Grid2>
-          <Grid2 size={6}>
+          <Grid2 size={7}>
             <Container
               maxWidth="xl"
               sx={{
@@ -42,7 +42,7 @@ function App() {
               <ChessGame />
             </Container>
           </Grid2>
-          <Grid2 size={3}>
+          <Grid2 size={4}>
             <Container
               sx={{
                 height: "100vh",
