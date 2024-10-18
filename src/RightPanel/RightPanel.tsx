@@ -1,6 +1,6 @@
 import { Box, Grid2, Stack } from "@mui/material";
 import React from "react";
-import FENBox from "./components/FENString";
+import FENBox from "./components/FENBox";
 import MoveHistoryBox from "./components/MoveHistoryBox";
 import NavigationButton from "./components/NavigationButton";
 

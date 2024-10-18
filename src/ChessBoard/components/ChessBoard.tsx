@@ -4,8 +4,11 @@ import { Box } from "@mui/material/";
 import React, { useState } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { pieceImages } from "../../ChessLogic/chessUtils";
+import { ChessBoardProps } from "../ChessGame";
 
-const ChessBoard: React.FC = () => {
+
+
+const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { board, currentPlayer, legalMoves, handleMove, handleLegalMove } =
     useChessContext();
 
@@ -73,14 +76,15 @@ const ChessBoard: React.FC = () => {
   return (
     <Box
       sx={{
-        width: 720,
-        height: 720,
+        width: squareSize * 8,
+        height: squareSize * 8,
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
         alignItems: "center",
         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.6)",
         userSelect: "none",
+        zIndex: "1"
       }}
     >
       {board.map((row, rowIndex) =>
@@ -88,12 +92,11 @@ const ChessBoard: React.FC = () => {
           <Box
             key={`${rowIndex}-${colIndex}`}
             sx={{
-              width: 90,
-              height: 90,
+              width: squareSize,
+              height: squareSize,
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              fontSize: "30px",
               backgroundColor: getSquareColor([rowIndex, colIndex]),
               boxShadow: isSelected([rowIndex, colIndex])
                 ? "0px 0px 0px 6px #ffffff inset"
@@ -121,7 +124,7 @@ const ChessBoard: React.FC = () => {
                 <CircleOutlinedIcon
                   sx={{
                     position: "absolute",
-                    fontSize: "108px",
+                    fontSize: squareSize / 0.84,
                     display: isLegalMove([rowIndex, colIndex])
                       ? "flex"
                       : "none",
@@ -132,7 +135,7 @@ const ChessBoard: React.FC = () => {
             ) : (
               <Circle
                 sx={{
-                  fontSize: "36px",
+                  fontSize: squareSize / 2.5,
                   display: isLegalMove([rowIndex, colIndex]) ? "flex" : "none",
                   color: "#0000005e",
                 }}

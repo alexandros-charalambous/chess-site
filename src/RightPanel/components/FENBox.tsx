@@ -60,13 +60,6 @@ const FENBox: React.FC = () => {
         {FENString}
       </Typography>
       <Box />
-      <Typography color="#ffffff" variant="caption">
-        {result?.success}
-        {result?.evaluation}
-        {result?.mate}
-        {result?.bestmove}
-        {result?.continuation}
-      </Typography>
       <Tooltip title="Copy">
         <IconButton
           sx={{

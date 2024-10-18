@@ -94,12 +94,12 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentBoard(board);
       setLastMove(move);
       setLegalMoves([]);
-      updatecastleState(move, castleState);
+      updateCastleState(move, castleState);
       setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
       setFENString(
         boardToFEN(
           board,
-          currentPlayer === 'white' ? 'black' : 'white',
+          currentPlayer === "white" ? "black" : "white",
           getCastlingAvailability(castleState),
           getEnPassantTarget(move, board[from[0]][from[1]]),
           getHalfMoveClock(board[from[0]][from[1]], capturedPiece !== null),
@@ -118,7 +118,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const updatecastleState = (
+  const updateCastleState = (
     move: Move,
     castleState: {
       white: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
