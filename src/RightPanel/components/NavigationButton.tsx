@@ -9,7 +9,7 @@ import { useChessContext } from "../../ChessLogic/ChessContext";
 const NavigationButton: React.FC = () => {
   const { moveHistory, loadHistoryBoard } = useChessContext();
 
-  const [currentMoveIndex, setCurrentMoveIndex] = useState(
+  const [currentMoveIndex, setCurrentMoveIndex] = useState<number>(
     moveHistory.length - 1
   );
 

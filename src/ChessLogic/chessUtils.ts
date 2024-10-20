@@ -1,4 +1,4 @@
-import { Board } from './types';
+import { Board, MoveHistory } from './types';
 
 export const initialBoardSetup = (): Board => [
     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -39,3 +39,14 @@ export const chessNotations = (row: number, col: number) => {
   return notationMap.get(`${row},${col}`);
 };
 
+export const initialMoveHistory = (): MoveHistory[] => [
+  {
+    move: {
+      from: [0, 0],
+      to: [0, 0],
+    },
+    board: initialBoardSetup().map((row) => [...row]),
+    piece: null,
+    capturedPiece: undefined,
+  },
+];

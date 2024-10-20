@@ -6,8 +6,6 @@ import { useChessContext } from "../../ChessLogic/ChessContext";
 import { pieceImages } from "../../ChessLogic/chessUtils";
 import { ChessBoardProps } from "../ChessGame";
 
-
-
 const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { board, currentPlayer, legalMoves, handleMove, handleLegalMove } =
     useChessContext();
@@ -84,7 +82,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
         alignItems: "center",
         boxShadow: "0 4px 10px rgba(0, 0, 0, 0.6)",
         userSelect: "none",
-        zIndex: "1"
+        zIndex: "1",
       }}
     >
       {board.map((row, rowIndex) =>

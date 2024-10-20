@@ -12,7 +12,7 @@ const MoveHistoryBox: React.FC = () => {
   }
 
   const getPieceNotation = (piece: Piece) => {
-    const pieceType = piece?.substring(1);
+    const pieceType = piece?.substring(1, 2);
     switch (pieceType) {
       case "P":
         return "";
@@ -20,12 +20,15 @@ const MoveHistoryBox: React.FC = () => {
         return pieceType;
     }
   };
-  const formatMoveHistoryToAlgebraic = (move: MoveHistory): string => {
-    const { move: moveDetails, piece, capturedPiece } = move;
+
+  const formatMoveHistoryToAlgebraic = (moveHistory: MoveHistory): string => {
+    const { move: moveDetails, piece, capturedPiece } = moveHistory;
     const pieceNotation = getPieceNotation(piece);
     const toNotation = chessNotations(moveDetails.to[0], moveDetails.to[1]);
 
     let moveString = "";
+
+    moveString = `${pieceNotation}${capturedPiece ? "x" : ""}${toNotation}`;
 
     if (pieceNotation === "K") {
       if (moveDetails.from[1] === 4 && moveDetails.to[1] === 6) {
@@ -34,8 +37,6 @@ const MoveHistoryBox: React.FC = () => {
         moveString = `O-O-O`;
       }
     }
-
-    moveString = `${pieceNotation}${capturedPiece ? "x" : ""}${toNotation}`;
 
     return moveString;
   };

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { getLegalMoves, isValidMove, makeMove } from "./chessLogic";
-import { initialBoardSetup } from "./chessUtils";
+import { initialBoardSetup, initialMoveHistory } from "./chessUtils";
 import {
   boardToFEN,
   getCastlingAvailability,
@@ -50,18 +50,6 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   };
 
-  const initialMoveHistory: MoveHistory[] = [
-    {
-      move: {
-        from: [0, 0],
-        to: [0, 0],
-      },
-      board: initialBoardSetup().map((row) => [...row]),
-      piece: null,
-      capturedPiece: undefined,
-    },
-  ];
-
   const [board, setBoard] = useState<Board>(initialBoardSetup);
   const [currentPlayer, setCurrentPlayer] = useState<"white" | "black">(
     "white"
@@ -92,10 +80,10 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     if (isValidMove(move, board, currentPlayer, lastMove, canCastle)) {
       setBoard(makeMove(move, board));
       setCurrentBoard(board);
+      setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
       setLastMove(move);
       setLegalMoves([]);
-      updateCastleState(move, castleState);
-      setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
+      setCastleState(updateCastleState(move, castleState));
       setFENString(
         boardToFEN(
           board,
@@ -125,7 +113,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
       black: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
     }
   ) => {
-    const piece = board[move.from[0]][move.from[1]];
+    const piece = board[move.to[0]][move.to[1]];
     const color = currentPlayer;
 
     if (piece?.substring(1, 2) === "K") {
@@ -137,7 +125,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
         castleState[color].rookKingside = true;
       }
     }
-    setCastleState(castleState);
+
+    return castleState;
   };
 
   const handleLegalMove = (from: [number, number]) => {

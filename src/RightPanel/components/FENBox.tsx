@@ -1,15 +1,6 @@
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { useChessContext } from "../../ChessLogic/ChessContext";
-import { useEffect, useState } from "react";
-
-interface StockfishAPIResponse {
-  success: boolean;
-  evaluation: string;
-  mate: string;
-  bestmove: string;
-  continuation: string;
-}
 
 const FENBox: React.FC = () => {
   const { FENString } = useChessContext();
@@ -17,28 +8,6 @@ const FENBox: React.FC = () => {
   const handleCopy = () => {
     navigator.clipboard.writeText(FENString);
   };
-
-  const [depth, setDepth] = useState<number>(12);
-  const [result, setResult] = useState<StockfishAPIResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const StockfishAPI = async (depth: number) => {
-    setError(null);
-    try {
-      const response = await fetch(
-        `https://stockfish.online/api/s/v2.php?fen=${FENString}&depth=${depth}`
-      );
-
-      const data = await response.json();
-      setResult(data);
-    } catch (error: any) {
-      setError("Failed to fetch analysis. Please try again.");
-    }
-  };
-
-  useEffect(() => {
-    StockfishAPI(depth);
-  }, [FENString, depth]);
 
   return (
     <Box
