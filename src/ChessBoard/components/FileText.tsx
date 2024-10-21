@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { ChessBoardProps } from "../ChessGame";
 
 const FileText: React.FC<ChessBoardProps> = ({ squareSize }) => {
@@ -6,16 +6,19 @@ const FileText: React.FC<ChessBoardProps> = ({ squareSize }) => {
 
   return (
     <>
-      {fileNumbers.map((number, fileIndex) => (
+      {fileNumbers.map((number) => (
         <Box
           key={`${number}`}
           sx={{
             height: squareSize,
-            alignContent: "center",
             width: squareSize / 3,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "end",
+            alignContent: "center",
           }}
         >
-          <Typography color="#ffffff" fontSize={squareSize / 4}>
+          <Typography color="#ffffffcc" fontSize={squareSize / 4}>
             {number}
           </Typography>
         </Box>

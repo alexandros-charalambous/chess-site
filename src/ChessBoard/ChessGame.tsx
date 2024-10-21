@@ -10,11 +10,11 @@ export interface ChessBoardProps {
 }
 
 const ChessGame: React.FC = () => {
-  const [squareSize, setSquareSize] = useState<number>(120);
+  const [squareSize, setSquareSize] = useState<number>(90);
 
   return (
     <Grid2 container direction={"column"}>
-      <Grid2 container direction={"row"}>
+      <Grid2 container direction={"row"} spacing={2}>
         <Grid2>
           <EvaluationBar squareSize={squareSize} />
         </Grid2>
@@ -28,10 +28,9 @@ const ChessGame: React.FC = () => {
         >
           <ChessBoard squareSize={squareSize} />
         </Grid2>
-        <Grid2 />
       </Grid2>
 
-      <Grid2 container direction={"row"}>
+      <Grid2 container direction={"row"} justifyContent={"end"}>
         <RankText squareSize={squareSize} />
       </Grid2>
     </Grid2>

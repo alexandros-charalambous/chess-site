@@ -22,75 +22,75 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
     mate === null ? 100 - whitePercentage : mate < 0 ? 100 : 0;
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center">
+    <Box
+      width={squareSize / 3}
+      height={squareSize * 8}
+      sx={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column-reverse",
+        transition: "height 1s ease-in-out",
+      }}
+    >
       <Box
-        width="35px"
-        height={squareSize * 8}
         sx={{
-          position: "relative",
-          display: "flex",
-          flexDirection: "column-reverse",
+          backgroundColor: "white",
+          height: `${whitePercentage}%`,
           transition: "height 1s ease-in-out",
+          display: "flex",
+          justifyContent: evaluation > 0 ? "flex-end" : "flex-start",
+          alignItems: "center",
+          padding: mate && mate > 0 ? "0px" : "10px",
+          position: "relative",
         }}
       >
-        <Box
+        <Typography
           sx={{
-            backgroundColor: "white",
-            height: `${whitePercentage}%`,
-            transition: "height 1s ease-in-out",
-            display: "flex",
-            justifyContent: evaluation > 0 ? "flex-end" : "flex-start",
-            alignItems: "center",
+            position: "absolute",
+            fontSize: "8px",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "3px",
             color: "black",
-            padding: "10px",
-            position: "relative",
           }}
         >
-          <Typography
-            sx={{
-              position: "absolute",
-              fontSize: "10px",
-              bottom: 0,
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          >
-            {mate && mate > 0
-              ? `M${Math.abs(mate)}`
-              : evaluation > 0
-              ? `${evaluation.toFixed(2)}`
-              : ``}
-          </Typography>
-        </Box>
-        <Box
+          {mate && mate > 0
+            ? `M${Math.abs(mate)}`
+            : evaluation > 0
+            ? `${evaluation}`
+            : ``}
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          backgroundColor: "#2d2d2d",
+          height: `${blackPercentage}%`,
+          transition: "height 1s ease-in-out",
+          display: "flex",
+          justifyContent: evaluation < 0 ? "flex-start" : "flex-end",
+          alignItems: "center",
+          padding: mate && mate < 0 ? "0px" : "10px",
+          position: "relative",
+        }}
+      >
+        <Typography
           sx={{
-            backgroundColor: "black",
-            height: `${blackPercentage}%`,
-            transition: "height 1s ease-in-out",
-            display: "flex",
-            justifyContent: evaluation < 0 ? "flex-start" : "flex-end",
-            alignItems: "center",
+            position: "absolute",
+            fontSize: "8px",
+            top: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
             color: "white",
-            padding: "10px",
-            position: "relative",
+            padding: "3px",
           }}
         >
-          <Typography
-            sx={{
-              position: "absolute",
-              fontSize: "10px",
-              top: 0,
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          >
-            {mate && mate < 0
-              ? `M${Math.abs(mate)}`
-              : evaluation < 0
-              ? `${evaluation.toFixed(2)}`
-              : ``}
-          </Typography>
-        </Box>
+          {mate && mate < 0
+            ? `M${Math.abs(mate)}`
+            : evaluation < 0
+            ? `${Math.abs(evaluation)}`
+            : ``}
+        </Typography>
       </Box>
     </Box>
   );
