@@ -18,6 +18,7 @@ interface ChessContextProps {
   lastMove: Move | null;
   handleMove: (from: [number, number], to: [number, number]) => void;
   handleLegalMove: (from: [number, number]) => void;
+  resetLegalMove: () => void;
   resetBoard: () => void;
   moveHistory: MoveHistory[];
   loadHistoryBoard: (board: Board) => void;
@@ -139,6 +140,10 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const resetLegalMove = () => {
+    setLegalMoves([]);
+  };
+
   const loadHistoryBoard = (board: Board) => {
     setBoard(deepCopyBoard(board));
     setLegalMoves([]);
@@ -162,6 +167,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     lastMove,
     handleMove,
     handleLegalMove,
+    resetLegalMove,
     resetBoard,
     moveHistory,
     loadHistoryBoard,

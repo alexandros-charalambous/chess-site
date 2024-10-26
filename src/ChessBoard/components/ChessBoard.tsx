@@ -1,14 +1,20 @@
 import { Circle } from "@mui/icons-material";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { Box } from "@mui/material/";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { pieceImages } from "../../ChessLogic/chessUtils";
 import { ChessBoardProps } from "../ChessGame";
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
-  const { board, currentPlayer, legalMoves, handleMove, handleLegalMove } =
-    useChessContext();
+  const {
+    board,
+    currentPlayer,
+    legalMoves,
+    handleMove,
+    handleLegalMove,
+    resetLegalMove,
+  } = useChessContext();
 
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
     null
@@ -18,6 +24,58 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     piece: string;
   }>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [cursorPos, setCursorPos] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [hoveredSquare, setHoveredSquare] = useState<[number, number] | null>(
+    null
+  );
+
+  //Tracks the mouse position always
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setCursorPos({ x: event.clientX, y: event.clientY });
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      setCursorPos({ x: event.clientX, y: event.clientY });
+
+      const boardRect = document
+        .getElementById("chessboardSquare")
+        ?.getBoundingClientRect();
+      if (boardRect) {
+        const x = event.clientX - boardRect.left;
+        const y = event.clientY - boardRect.top;
+
+        const col = Math.floor(x / squareSize);
+        const row = Math.floor(y / squareSize);
+
+        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+          setHoveredSquare([row, col]);
+        } else {
+          setHoveredSquare(null);
+        }
+      }
+    };
+
+    if (isDragging) {
+      document.addEventListener("mousemove", handleMouseMove);
+    } else {
+      document.removeEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [isDragging, squareSize]);
 
   const isLegalMove = (from: [number, number]) =>
     legalMoves.some((move) => move[0] === from[0] && move[1] === from[1]);
@@ -34,115 +92,198 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     );
   };
 
-  const handleSquareDrop = (from: [number, number]) => {
+  const handleSquareDrop = (from: [number, number], event?: MouseEvent) => {
+    if (event && event.button === 2) {
+      resetDragState();
+      resetLegalMove();
+      return;
+    }
+
     if (selectedPiece) {
       const selectedPieceFrom: [number, number] = selectedPiece.from;
       const to: [number, number] = [from[0], from[1]];
 
-      handleMove(selectedPieceFrom, to);
-      setSelectedPiece(null);
-      setSelectedSquare(null);
-      setIsDragging(false);
+      if (isDragging) {
+        if (isLegalMove(to)) {
+          handleMove(selectedPieceFrom, to);
+        }
+        resetDragState();
+      } else {
+        handleMove(selectedPieceFrom, to);
+      }
     }
   };
 
-  const handleDragStart = (from: [number, number], piece: string) => {
-    setSelectedPiece({ from: [from[0], from[1]], piece });
-    setSelectedSquare([from[0], from[1]]);
-
-    setIsDragging(true);
-
-    handleLegalMove([from[0], from[1]]);
+  const handleDragStart = (
+    from: [number, number],
+    piece: string,
+    event: React.MouseEvent
+  ) => {
+    if (event.button === 0) {
+      setSelectedPiece({ from: [from[0], from[1]], piece });
+      setSelectedSquare([from[0], from[1]]);
+      setIsDragging(true);
+      handleLegalMove([from[0], from[1]]);
+    }
   };
 
   const handleSquareClick = (from: [number, number]) => {
     const piece = board[from[0]][from[1]];
+
     if (
       (piece?.substring(0, 1) === "w" && currentPlayer === "white") ||
       (piece?.substring(0, 1) === "b" && currentPlayer === "black")
     ) {
       setSelectedPiece({ from: [from[0], from[1]], piece });
       setSelectedSquare([from[0], from[1]]);
-
       handleLegalMove([from[0], from[1]]);
     } else if (selectedPiece) {
-      handleLegalMove([from[0], from[1]]);
       handleSquareDrop([from[0], from[1]]);
     }
   };
 
+  const resetDragState = () => {
+    setSelectedPiece(null);
+    setSelectedSquare(null);
+    setIsDragging(false);
+    setHoveredSquare(null);
+    resetLegalMove();
+  };
+
+  const handleRightClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    resetDragState();
+    resetLegalMove();
+  };
+
+  const handleMouseUp = (from: [number, number], event: React.MouseEvent) => {
+    handleSquareDrop(from, event.nativeEvent);
+  };
+
   return (
-    <Box
-      sx={{
-        width: squareSize * 8,
-        height: squareSize * 8,
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        alignItems: "center",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.6)",
-        userSelect: "none",
-        zIndex: "1",
-      }}
-    >
-      {board.map((row, rowIndex) =>
-        row.map((piece, colIndex) => (
-          <Box
-            key={`${rowIndex}-${colIndex}`}
-            sx={{
-              width: squareSize,
-              height: squareSize,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: getSquareColor([rowIndex, colIndex]),
-              boxShadow: isSelected([rowIndex, colIndex])
-                ? "0px 0px 0px 6px #ffffff inset"
-                : "none",
-            }}
-            onDrop={() => handleSquareDrop([rowIndex, colIndex])}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => handleSquareClick([rowIndex, colIndex])}
-          >
-            {piece ? (
-              <>
-                <img
-                  src={pieceImages[piece]}
-                  alt={piece}
-                  draggable
-                  onDragStart={() =>
-                    handleDragStart([rowIndex, colIndex], piece)
-                  }
-                  style={{
-                    width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
-                    height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
-                    cursor: isDragging ? "grabbing" : "grab",
-                  }}
-                />
-                <CircleOutlinedIcon
+    <>
+      <Box
+        id="chessboardSquare"
+        sx={{
+          width: squareSize * 8,
+          height: squareSize * 8,
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          alignItems: "center",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.6)",
+          userSelect: "none",
+          zIndex: "1",
+          position: "relative",
+        }}
+        onContextMenu={handleRightClick}
+      >
+        {board.map((row, rowIndex) =>
+          row.map((piece, colIndex) => (
+            <Box
+              key={`${rowIndex}-${colIndex}`}
+              sx={{
+                width: squareSize,
+                height: squareSize,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: getSquareColor([rowIndex, colIndex]),
+                boxShadow:
+                  isSelected([rowIndex, colIndex]) ||
+                  (hoveredSquare &&
+                    hoveredSquare[0] === rowIndex &&
+                    hoveredSquare[1] === colIndex &&
+                    isDragging)
+                    ? "0px 0px 0px 6px #ffffff inset"
+                    : "none",
+              }}
+              onMouseEnter={() => setHoveredSquare([rowIndex, colIndex])}
+              onMouseLeave={() => setHoveredSquare(null)}
+              onDrop={(e) =>
+                handleSquareDrop([rowIndex, colIndex], e.nativeEvent)
+              }
+              onMouseUp={(e) => handleMouseUp([rowIndex, colIndex], e)}
+              onClick={() => handleSquareClick([rowIndex, colIndex])}
+            >
+              {piece ? (
+                <>
+                  <img
+                    src={pieceImages[piece]}
+                    alt={piece}
+                    draggable={false}
+                    onMouseDown={(event) =>
+                      handleDragStart([rowIndex, colIndex], piece, event)
+                    }
+                    style={{
+                      width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+                      height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
+                      cursor: isDragging ? "grabbing" : "grab",
+                      opacity:
+                        isDragging && isSelected([rowIndex, colIndex]) ? 0 : 1,
+                    }}
+                  />
+                  <CircleOutlinedIcon
+                    sx={{
+                      position: "absolute",
+                      fontSize: squareSize / 0.84,
+                      display: isLegalMove([rowIndex, colIndex])
+                        ? "flex"
+                        : "none",
+                      color: "#0000005e",
+                    }}
+                  />
+                </>
+              ) : (
+                <Circle
                   sx={{
-                    position: "absolute",
-                    fontSize: squareSize / 0.84,
+                    fontSize: squareSize / 2.5,
                     display: isLegalMove([rowIndex, colIndex])
                       ? "flex"
                       : "none",
                     color: "#0000005e",
                   }}
                 />
-              </>
-            ) : (
-              <Circle
-                sx={{
-                  fontSize: squareSize / 2.5,
-                  display: isLegalMove([rowIndex, colIndex]) ? "flex" : "none",
-                  color: "#0000005e",
-                }}
-              />
-            )}
-          </Box>
-        ))
+              )}
+            </Box>
+          ))
+        )}
+      </Box>
+
+      {isDragging && selectedPiece && (
+        <Box
+          sx={{
+            position: "fixed",
+            left:
+              selectedPiece.piece?.substring(1, 2) === "P"
+                ? cursorPos.x - (squareSize * 7.5) / 10 / 2
+                : cursorPos.x - (squareSize * 8.5) / 10 / 2,
+            top:
+              selectedPiece.piece?.substring(1, 2) === "P"
+                ? cursorPos.y - (squareSize * 7.5) / 10 / 2
+                : cursorPos.y - (squareSize * 8.5) / 10 / 2,
+            pointerEvents: "none",
+            zIndex: 9999,
+            cursor: "grabbing",
+          }}
+        >
+          <img
+            src={pieceImages[selectedPiece.piece]}
+            alt={selectedPiece.piece}
+            style={{
+              width:
+                selectedPiece.piece?.substring(1, 2) === "P"
+                  ? (squareSize * 7.5) / 10
+                  : (squareSize * 8.5) / 10,
+              height:
+                selectedPiece.piece?.substring(1, 2) === "P"
+                  ? (squareSize * 7.5) / 10
+                  : (squareSize * 8.5) / 10,
+            }}
+          />
+        </Box>
       )}
-    </Box>
+    </>
   );
 };
 

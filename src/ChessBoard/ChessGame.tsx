@@ -10,7 +10,7 @@ export interface ChessBoardProps {
 }
 
 const ChessGame: React.FC = () => {
-  const [squareSize, setSquareSize] = useState<number>(90);
+  const [squareSize, setSquareSize] = useState<number>(120);
 
   return (
     <Grid2 container direction={"column"}>

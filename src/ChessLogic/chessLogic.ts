@@ -129,7 +129,7 @@ const pawnMove = (from: [number, number], to: [number, number], board: Board, pi
   if (lastMove !== null) {
     const lastMoveWasDoubleStepPawn = board[lastMove.to[0]][lastMove.to[1]] === (pieceColor === 'white' ? 'bP' : 'wP') && Math.abs(lastMove.from[0] - lastMove.to[0]) === 2;
     const enPassantRow = pieceColor === 'white' ? 3 : 4;
-    if (lastMoveWasDoubleStepPawn && from[0] === enPassantRow && to[1] === lastMove.to[1] && ((pieceColor === 'white' && to[0] === from[0] - 1) || (pieceColor === 'black' && to[0] === from[0] + 1))) return true;
+    if (lastMoveWasDoubleStepPawn && from[0] === enPassantRow && Math.abs(from[1] - lastMove.to[1]) === 1 && to[1] === lastMove.to[1] && ((pieceColor === 'white' && to[0] === from[0] - 1) || (pieceColor === 'black' && to[0] === from[0] + 1))) return true;
   }
 
   const isCaptureMove = Math.abs(from[1] - to[1]) === 1 && (to[0] - from[0] === forward);

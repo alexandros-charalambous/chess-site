@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import { useStockfishContext } from "../../ChessLogic/StockfishContext";
 import { ChessBoardProps } from "../ChessGame";
 
@@ -22,77 +22,82 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
     mate === null ? 100 - whitePercentage : mate < 0 ? 100 : 0;
 
   return (
-    <Box
-      width={squareSize / 3}
-      height={squareSize * 8}
-      sx={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column-reverse",
-        transition: "height 1s ease-in-out",
-      }}
+    <Tooltip
+      title={mate ? `M${Math.abs(mate)}` : `${evaluation}`}
+      placement="right"
     >
       <Box
+        width={squareSize / 3.5}
+        height={squareSize * 8}
         sx={{
-          backgroundColor: "white",
-          height: `${whitePercentage}%`,
-          transition: "height 1s ease-in-out",
-          display: "flex",
-          justifyContent: evaluation > 0 ? "flex-end" : "flex-start",
-          alignItems: "center",
-          padding: mate && mate > 0 ? "0px" : "10px",
           position: "relative",
+          display: "flex",
+          flexDirection: "column-reverse",
+          transition: "height 1s ease-in-out",
         }}
       >
-        <Typography
+        <Box
           sx={{
-            position: "absolute",
-            fontSize: "8px",
-            bottom: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            padding: "3px",
-            color: "black",
+            backgroundColor: "white",
+            height: `${whitePercentage}%`,
+            transition: "height 1s ease-in-out",
+            display: "flex",
+            justifyContent: evaluation > 0 ? "flex-end" : "flex-start",
+            alignItems: "center",
+            padding: mate && mate > 0 ? "0px" : "10px",
+            position: "relative",
           }}
         >
-          {mate && mate > 0
-            ? `M${Math.abs(mate)}`
-            : evaluation > 0
-            ? `${evaluation}`
-            : ``}
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          backgroundColor: "#2d2d2d",
-          height: `${blackPercentage}%`,
-          transition: "height 1s ease-in-out",
-          display: "flex",
-          justifyContent: evaluation < 0 ? "flex-start" : "flex-end",
-          alignItems: "center",
-          padding: mate && mate < 0 ? "0px" : "10px",
-          position: "relative",
-        }}
-      >
-        <Typography
+          <Typography
+            sx={{
+              position: "absolute",
+              fontSize: squareSize / 10,
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              padding: "3px",
+              color: "black",
+            }}
+          >
+            {mate && mate > 0
+              ? `M${Math.abs(mate)}`
+              : evaluation > 0
+              ? `${evaluation}`
+              : ``}
+          </Typography>
+        </Box>
+        <Box
           sx={{
-            position: "absolute",
-            fontSize: "8px",
-            top: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            color: "white",
-            padding: "3px",
+            backgroundColor: "#2d2d2d",
+            height: `${blackPercentage}%`,
+            transition: "height 1s ease-in-out",
+            display: "flex",
+            justifyContent: evaluation < 0 ? "flex-start" : "flex-end",
+            alignItems: "center",
+            padding: mate && mate < 0 ? "0px" : "10px",
+            position: "relative",
           }}
         >
-          {mate && mate < 0
-            ? `M${Math.abs(mate)}`
-            : evaluation < 0
-            ? `${Math.abs(evaluation)}`
-            : ``}
-        </Typography>
+          <Typography
+            sx={{
+              position: "absolute",
+              fontSize: squareSize / 10,
+              top: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              color: "white",
+              padding: "3px",
+            }}
+          >
+            {mate && mate < 0
+              ? `M${Math.abs(mate)}`
+              : evaluation < 0
+              ? `${Math.abs(evaluation)}`
+              : ``}
+          </Typography>
+        </Box>
       </Box>
-    </Box>
+    </Tooltip>
   );
 };
 export default EvaluationBar;

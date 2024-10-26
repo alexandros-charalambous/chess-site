@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useChessContext } from "../../ChessLogic/ChessContext";
-import { chessNotations } from "../../ChessLogic/chessUtils";
+import { chessNotations, pieceImages } from "../../ChessLogic/chessUtils";
 import { MoveHistory, Piece } from "../../ChessLogic/types";
 
 const MoveHistoryBox: React.FC = () => {
@@ -28,7 +28,7 @@ const MoveHistoryBox: React.FC = () => {
 
     let moveString = "";
 
-    moveString = `${pieceNotation}${capturedPiece ? "x" : ""}${toNotation}`;
+    moveString = `${capturedPiece ? "x" : ""}${toNotation}`;
 
     if (pieceNotation === "K") {
       if (moveDetails.from[1] === 4 && moveDetails.to[1] === 6) {
@@ -68,6 +68,19 @@ const MoveHistoryBox: React.FC = () => {
 
             {row.map((moveHistory: MoveHistory, index: number) => (
               <Button
+                startIcon={
+                  <img
+                    src={
+                      moveHistory.piece === null
+                        ? ""
+                        : pieceImages[moveHistory.piece]
+                    }
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                    }}
+                  />
+                }
                 key={index}
                 variant="text"
                 sx={{
