@@ -1,6 +1,15 @@
 import React, { createContext, useContext, useState } from "react";
-import { getLegalMoves, isValidMove, makeMove } from "./chessLogic";
-import { initialBoardSetup, initialMoveHistory } from "./chessUtils";
+import {
+  checkCheckmate,
+  getLegalMoves,
+  isValidMove,
+  makeMove,
+} from "./chessLogic";
+import {
+  initialBoardSetup,
+  initialFENString,
+  initialMoveHistory,
+} from "./chessUtils";
 import {
   boardToFEN,
   getCastlingAvailability,
@@ -14,6 +23,7 @@ import { Board, Move, MoveHistory } from "./types";
 interface ChessContextProps {
   board: Board;
   currentPlayer: "white" | "black";
+  isCheckmate: boolean;
   legalMoves: [number, number][];
   lastMove: Move | null;
   handleMove: (from: [number, number], to: [number, number]) => void;
@@ -21,7 +31,7 @@ interface ChessContextProps {
   resetLegalMove: () => void;
   resetBoard: () => void;
   moveHistory: MoveHistory[];
-  loadHistoryBoard: (board: Board) => void;
+  loadHistoryBoard: (moveHistory: MoveHistory) => void;
   FENString: string;
 }
 
@@ -55,6 +65,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const [currentPlayer, setCurrentPlayer] = useState<"white" | "black">(
     "white"
   );
+  const [isCheckmate, setIsCheckmate] = useState<boolean>(false);
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [legalMoves, setLegalMoves] = useState<[number, number][]>([]);
   const [moveHistory, setMoveHistory] =
@@ -66,9 +77,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     castleState[currentPlayer].rookKingside,
     castleState[currentPlayer].rookQueenside,
   ];
-  const [FENString, setFENString] = useState<string>(
-    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-  );
+  const [FENString, setFENString] = useState<string>(initialFENString);
   const deepCopyBoard = (board: Board): Board => {
     return board.map((row) => [...row]);
   };
@@ -79,31 +88,43 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const capturedPiece = board[to[0]][to[1]];
     if (isValidMove(move, board, currentPlayer, lastMove, canCastle)) {
-      setBoard(makeMove(move, board));
+      const newBoard = makeMove(move, board);
+      const fen = boardToFEN(
+        board,
+        currentPlayer === "white" ? "black" : "white",
+        getCastlingAvailability(castleState),
+        getEnPassantTarget(move, board[from[0]][from[1]]),
+        getHalfMoveClock(board[from[0]][from[1]], capturedPiece !== null),
+        getFullMoveNumber(currentPlayer)
+      );
+
+      setBoard(newBoard);
       setCurrentBoard(board);
       setCurrentPlayer(currentPlayer === "white" ? "black" : "white");
       setLastMove(move);
       setLegalMoves([]);
       setCastleState(updateCastleState(move, castleState));
-      setFENString(
-        boardToFEN(
-          board,
-          currentPlayer === "white" ? "black" : "white",
-          getCastlingAvailability(castleState),
-          getEnPassantTarget(move, board[from[0]][from[1]]),
-          getHalfMoveClock(board[from[0]][from[1]], capturedPiece !== null),
-          getFullMoveNumber(currentPlayer)
-        )
-      );
+      setFENString(fen);
       setMoveHistory((prevHistory) => {
         const newMove = {
           move,
           board: deepCopyBoard(board),
           piece,
           capturedPiece: capturedPiece || undefined,
+          fen,
         };
         return [...prevHistory, newMove];
       });
+      if (
+        checkCheckmate(
+          newBoard,
+          currentPlayer === "white" ? "black" : "white",
+          move,
+          canCastle
+        )
+      ) {
+        setIsCheckmate(true);
+      }
     }
   };
 
@@ -132,7 +153,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleLegalMove = (from: [number, number]) => {
     if (board[from[0]][from[1]] === null) {
-      setLegalMoves([]);
+      resetLegalMove();
     } else {
       setLegalMoves(
         getLegalMoves(from, board, currentPlayer, lastMove, canCastle)
@@ -144,12 +165,14 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setLegalMoves([]);
   };
 
-  const loadHistoryBoard = (board: Board) => {
-    setBoard(deepCopyBoard(board));
+  const loadHistoryBoard = (moveHistory: MoveHistory) => {
+    setBoard(deepCopyBoard(moveHistory.board));
+    setFENString(moveHistory.fen);
     setLegalMoves([]);
   };
 
   const resetBoard = () => {
+    setIsCheckmate(false);
     setBoard(initialBoardSetup());
     setCurrentBoard(initialBoardSetup);
     setCurrentPlayer("white");
@@ -163,6 +186,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const value = {
     board,
     currentPlayer,
+    isCheckmate,
     legalMoves,
     lastMove,
     handleMove,

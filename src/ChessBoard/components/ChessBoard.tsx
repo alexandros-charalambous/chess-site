@@ -218,7 +218,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
                     style={{
                       width: piece?.substring(1, 2) === "P" ? "70%" : "80%",
                       height: piece?.substring(1, 2) === "P" ? "70%" : "80%",
-                      cursor: isDragging ? "grabbing" : "grab",
                       opacity:
                         isDragging && isSelected([rowIndex, colIndex]) ? 0 : 1,
                     }}
@@ -264,7 +263,6 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
                 : cursorPos.y - (squareSize * 8.5) / 10 / 2,
             pointerEvents: "none",
             zIndex: 9999,
-            cursor: "grabbing",
           }}
         >
           <img

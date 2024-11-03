@@ -39,6 +39,8 @@ export const chessNotations = (row: number, col: number) => {
   return notationMap.get(`${row},${col}`);
 };
 
+export const initialFENString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 export const initialMoveHistory = (): MoveHistory[] => [
   {
     move: {
@@ -48,5 +50,6 @@ export const initialMoveHistory = (): MoveHistory[] => [
     board: initialBoardSetup().map((row) => [...row]),
     piece: null,
     capturedPiece: undefined,
+    fen: initialFENString,
   },
 ];

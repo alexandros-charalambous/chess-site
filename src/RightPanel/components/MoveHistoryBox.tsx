@@ -88,7 +88,7 @@ const MoveHistoryBox: React.FC = () => {
                   borderRadius: "20px",
                   marginRight: "10px",
                 }}
-                onClick={() => loadHistoryBoard(moveHistory.board)}
+                onClick={() => loadHistoryBoard(moveHistory)}
               >
                 <Typography color="#ffffff">
                   {formatMoveHistoryToAlgebraic(moveHistory)}

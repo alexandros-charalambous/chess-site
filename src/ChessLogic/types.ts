@@ -12,4 +12,5 @@ export type MoveHistory = {
   board: Piece[][];
   piece: Piece; 
   capturedPiece?: Piece;
+  fen: string;
 }

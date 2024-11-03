@@ -14,29 +14,29 @@ const NavigationButton: React.FC = () => {
   );
 
   const goToFirstMove = () => {
-    loadHistoryBoard(moveHistory[0].board);
+    loadHistoryBoard(moveHistory[0]);
     setCurrentMoveIndex(0);
   };
   const goToPreviousMove = () => {
     if (currentMoveIndex === 0) {
-      loadHistoryBoard(moveHistory[0].board);
+      loadHistoryBoard(moveHistory[0]);
       setCurrentMoveIndex(0);
     } else {
-      loadHistoryBoard(moveHistory[currentMoveIndex - 1].board);
+      loadHistoryBoard(moveHistory[currentMoveIndex - 1]);
       setCurrentMoveIndex(currentMoveIndex - 1);
     }
   };
   const goToNextMove = () => {
     if (currentMoveIndex === moveHistory.length - 1) {
-      loadHistoryBoard(moveHistory[moveHistory.length - 1].board);
+      loadHistoryBoard(moveHistory[moveHistory.length - 1]);
       setCurrentMoveIndex(moveHistory.length - 1);
     } else {
-      loadHistoryBoard(moveHistory[currentMoveIndex + 1].board);
+      loadHistoryBoard(moveHistory[currentMoveIndex + 1]);
       setCurrentMoveIndex(currentMoveIndex + 1);
     }
   };
   const goToLastMove = () => {
-    loadHistoryBoard(moveHistory[moveHistory.length - 1].board);
+    loadHistoryBoard(moveHistory[moveHistory.length - 1]);
     setCurrentMoveIndex(moveHistory.length - 1);
   };
 

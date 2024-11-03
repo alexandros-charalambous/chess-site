@@ -182,6 +182,41 @@ const isKingInCheck = (board: Board, kingPosition: [number, number], currentPlay
   return false; 
 };
 
+export const checkCheckmate = (
+  board: Board,
+  currentPlayer: 'white' | 'black',
+  lastMove: Move | null,
+  castleState: [boolean, boolean, boolean]
+): boolean => {
+  const kingPosition = getKingPosition(board, currentPlayer);
+
+  const inCheck = isKingInCheck(board, kingPosition, currentPlayer, castleState);
+
+  if (!inCheck) return false;
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      if (piece && piece.startsWith(currentPlayer === 'white' ? 'w' : 'b')) {
+        const from: [number, number] = [row, col];
+        const legalMoves = getLegalMoves(from, board, currentPlayer, lastMove, castleState);
+
+        for (const to of legalMoves) {
+          const move: Move = { from, to };
+          const simulatedBoard = simulateMove(board, move);
+
+          if (!isKingInCheck(simulatedBoard, kingPosition, currentPlayer, castleState)) {
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true;
+};
+
+
 const simulateMove = (board: Board, move: Move): Board => {
   const newBoard = board.map(row => [...row]); 
   const piece = newBoard[move.from[0]][move.from[1]];
@@ -249,6 +284,7 @@ export const getLegalMoves = (
       }
     }
   }
+  
   return legalMoves;
 };
 

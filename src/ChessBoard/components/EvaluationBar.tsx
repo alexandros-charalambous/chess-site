@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Box, Tooltip, Typography } from "@mui/material";
 import { useStockfishContext } from "../../ChessLogic/StockfishContext";
 import { ChessBoardProps } from "../ChessGame";
+import { useChessContext } from "../../ChessLogic/ChessContext";
 
 const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { evaluation, mate } = useStockfishContext();
+  const { isCheckmate } = useChessContext();
 
   const maxEvaluation = 10;
   const normalizedEval = Math.max(
@@ -23,7 +25,15 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
 
   return (
     <Tooltip
-      title={mate ? `M${Math.abs(mate)}` : `${evaluation}`}
+      title={
+        whitePercentage == 100 && isCheckmate
+          ? `1-0`
+          : blackPercentage == 100 && isCheckmate
+          ? `0-1`
+          : mate
+          ? `M${Math.abs(mate)}`
+          : `${evaluation}`
+      }
       placement="right"
     >
       <Box
@@ -44,7 +54,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
             display: "flex",
             justifyContent: evaluation > 0 ? "flex-end" : "flex-start",
             alignItems: "center",
-            padding: mate && mate > 0 ? "0px" : "10px",
+            padding: mate && mate < 0 ? "0px" : "10px",
             position: "relative",
           }}
         >
@@ -55,11 +65,13 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
               bottom: 0,
               left: "50%",
               transform: "translateX(-50%)",
-              padding: "3px",
+              paddingBottom: "3px",
               color: "black",
             }}
           >
-            {mate && mate > 0
+            {whitePercentage == 100 && isCheckmate
+              ? `1-0`
+              : mate && mate > 0
               ? `M${Math.abs(mate)}`
               : evaluation > 0
               ? `${evaluation}`
@@ -74,7 +86,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
             display: "flex",
             justifyContent: evaluation < 0 ? "flex-start" : "flex-end",
             alignItems: "center",
-            padding: mate && mate < 0 ? "0px" : "10px",
+            padding: mate && mate > 0 ? "0px" : "10px",
             position: "relative",
           }}
         >
@@ -86,10 +98,12 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
               left: "50%",
               transform: "translateX(-50%)",
               color: "white",
-              padding: "3px",
+              paddingTop: "3px",
             }}
           >
-            {mate && mate < 0
+            {blackPercentage == 100 && isCheckmate
+              ? `0-1`
+              : mate && mate < 0
               ? `M${Math.abs(mate)}`
               : evaluation < 0
               ? `${Math.abs(evaluation)}`
