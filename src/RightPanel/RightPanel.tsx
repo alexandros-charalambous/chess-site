@@ -11,7 +11,7 @@ const RightPanel: React.FC = () => {
         <Box
           sx={{
             boxShadow: "0 3px 4px 0px #000000",
-            bgcolor: "#0000002e",
+            bgcolor: "#00000066",
           }}
         >
           <Stack spacing={1}>

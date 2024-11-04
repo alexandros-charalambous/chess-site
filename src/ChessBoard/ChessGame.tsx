@@ -14,28 +14,26 @@ const ChessGame: React.FC = () => {
   const [squareSize, setSquareSize] = useState<number>(90);
 
   return (
-    <Grid2 container direction={"column"}>
-      <Grid2 container direction={"row"} spacing={2}>
-        <Grid2>
-          <EvaluationBar squareSize={squareSize} />
-        </Grid2>
-        <Grid2>
-          <FileText squareSize={squareSize} />
-        </Grid2>
-        <Grid2
-          sx={{
-            justifyContent: "center",
-          }}
-        >
-          <ChessBoard squareSize={squareSize} />
-        </Grid2>
-        <Grid2>
-          <ChessTimer squareSize={squareSize} />
-        </Grid2>
+    <Grid2
+      container
+      direction={"row"}
+      spacing={2}
+      sx={{
+        userSelect: "none",
+      }}
+    >
+      <Grid2>
+        <EvaluationBar squareSize={squareSize} />
       </Grid2>
-
-      <Grid2 container direction={"row"} justifyContent={"center"}>
+      <Grid2>
+        <FileText squareSize={squareSize} />
+      </Grid2>
+      <Grid2>
+        <ChessBoard squareSize={squareSize} />
         <RankText squareSize={squareSize} />
+      </Grid2>
+      <Grid2>
+        <ChessTimer squareSize={squareSize} />
       </Grid2>
     </Grid2>
   );

@@ -6,22 +6,24 @@ const RankText: React.FC<ChessBoardProps> = ({ squareSize }) => {
 
   return (
     <>
-      {rankChars.map((char) => (
-        <Box
-          key={`${char}`}
-          sx={{
-            width: squareSize,
-            height: squareSize / 2,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "end",
-          }}
-        >
-          <Typography color="#ffffffcc" fontSize={squareSize / 4}>
-            {char}
-          </Typography>
-        </Box>
-      ))}
+      <Box sx={{ display: "flex" }}>
+        {rankChars.map((char) => (
+          <Box
+            key={`${char}`}
+            sx={{
+              width: squareSize,
+              height: squareSize / 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "end",
+            }}
+          >
+            <Typography color="#ffffffcc" fontSize={squareSize / 4}>
+              {char}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
     </>
   );
 };

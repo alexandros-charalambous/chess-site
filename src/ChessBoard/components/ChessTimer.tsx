@@ -4,12 +4,11 @@ import { Box, Grid2, Typography } from "@mui/material";
 import { ChessBoardProps } from "../ChessGame";
 
 const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
-  const { currentPlayer } = useChessContext();
+  const { currentPlayer, isGameActive } = useChessContext();
 
-  const [initialTime, setInitialTime] = useState(30);
-  const [whiteTime, setWhiteTime] = useState(initialTime * 1000);
-  const [blackTime, setBlackTime] = useState(initialTime * 1000);
-  const [isGameActive, setIsGameActive] = useState(true);
+  const [time, setTime] = useState(300);
+  const [whiteTime, setWhiteTime] = useState(time * 1000);
+  const [blackTime, setBlackTime] = useState(time * 1000);
 
   useEffect(() => {
     if (!isGameActive) return;
@@ -23,16 +22,6 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
     }, 100);
     return () => clearInterval(timer);
   }, [currentPlayer, isGameActive]);
-
-  // useEffect(() => {
-  //   if (whiteTime === 0) {
-  //     setIsGameActive(false);
-  //     alert("Black wins by timeout!");
-  //   } else if (blackTime === 0) {
-  //     setIsGameActive(false);
-  //     alert("White wins by timeout!");
-  //   }
-  // }, [whiteTime, blackTime]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60000);
