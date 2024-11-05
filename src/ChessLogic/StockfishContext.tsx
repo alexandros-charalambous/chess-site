@@ -23,7 +23,7 @@ export const useStockfishContext = () => {
 export const StockfishProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { FENString } = useChessContext();
+  const { isCheckmate, FENString } = useChessContext();
   const [depth, setDepth] = useState<number>(12);
   const [result, setResult] = useState<StockfishAPIResponse | null>(null);
   const [error, setError] = useState<string | null>();
@@ -35,15 +35,34 @@ export const StockfishProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const StockfishAPI = async (depth: number) => {
     setError(null);
-    try {
-      const response = await fetch(
-        `https://stockfish.online/api/s/v2.php?fen=${FENString}&depth=${depth}`
-      );
 
-      const data = await response.json();
-      setResult(data);
-    } catch (error: any) {
-      setError("Failed to fetch analysis. Please try again.");
+    if (!isCheckmate) {
+      try {
+        //https://chess-api.com/
+        const response = await fetch("https://chess-api.com/v1", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fen: `${FENString}`,
+            variants: 3,
+            depth: depth,
+            maxThinkingTime: 50,
+          }),
+        });
+
+        const data = await response.json();
+        setResult({
+          success: true,
+          evaluation: data.eval,
+          mate: data.mate,
+          bestmove: data.move,
+          continuation: data.continuationArr,
+        });
+      } catch (error: any) {
+        setError("Failed to fetch analysis. Please try again.");
+      }
     }
   };
 

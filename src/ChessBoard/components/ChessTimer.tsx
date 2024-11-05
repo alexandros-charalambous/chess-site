@@ -4,24 +4,7 @@ import { Box, Grid2, Typography } from "@mui/material";
 import { ChessBoardProps } from "../ChessGame";
 
 const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
-  const { currentPlayer, isGameActive } = useChessContext();
-
-  const [time, setTime] = useState(300);
-  const [whiteTime, setWhiteTime] = useState(time * 1000);
-  const [blackTime, setBlackTime] = useState(time * 1000);
-
-  useEffect(() => {
-    if (!isGameActive) return;
-
-    const timer = setInterval(() => {
-      if (currentPlayer === "white") {
-        setWhiteTime((prevTime) => Math.max(prevTime - 100, 0));
-      } else {
-        setBlackTime((prevTime) => Math.max(prevTime - 100, 0));
-      }
-    }, 100);
-    return () => clearInterval(timer);
-  }, [currentPlayer, isGameActive]);
+  const { currentPlayer, whiteTime, blackTime } = useChessContext();
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60000);

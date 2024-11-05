@@ -30,7 +30,7 @@ function App() {
               size={11.5}
               sx={{
                 display: "flex",
-                justifyContent: "space-around",
+                justifyContent: "space-evenly",
                 alignItems: "center",
                 height: "100vh",
                 backgroundImage: "url(/assets/wood.jpg)",

@@ -1,5 +1,5 @@
 import { Grid2 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChessBoard from "./components/ChessBoard";
 import FileText from "./components/FileText";
 import RankText from "./components/RankText";
@@ -11,7 +11,36 @@ export interface ChessBoardProps {
 }
 
 const ChessGame: React.FC = () => {
-  const [squareSize, setSquareSize] = useState<number>(90);
+  const [squareSize, setSquareSize] = useState<number>(120);
+
+  // Function to determine the square size based on screen width
+  // const updateSquareSize = () => {
+  //   const screenWidth = window.innerWidth;
+  //   if (screenWidth < 1240) {
+  //     setSquareSize(60);
+  //   } else if (screenWidth < 1550) {
+  //     setSquareSize(80);
+  //   } else if (screenWidth < 1900) {
+  //     setSquareSize(100);
+  //   } else if (screenWidth < 2550) {
+  //     setSquareSize(120);
+  //   } else {
+  //     setSquareSize(150);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   // Set the initial square size
+  //   updateSquareSize();
+
+  //   // Add an event listener to update the square size on window resize
+  //   window.addEventListener("resize", updateSquareSize);
+
+  //   // Clean up the event listener on component unmount
+  //   return () => {
+  //     window.removeEventListener("resize", updateSquareSize);
+  //   };
+  // }, []);
 
   return (
     <Grid2

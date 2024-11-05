@@ -62,6 +62,7 @@ export const boardToFEN = (
       castling += "k";
     if (!castleState.black.king && !castleState.black.rookQueenside)
       castling += "q";
+
     return castling || "-";
   }
   

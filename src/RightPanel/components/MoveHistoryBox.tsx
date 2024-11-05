@@ -90,7 +90,7 @@ const MoveHistoryBox: React.FC = () => {
                 }}
                 onClick={() => loadHistoryBoard(moveHistory)}
               >
-                <Typography color="#ffffff">
+                <Typography color="#ffffff" fontSize={20}>
                   {formatMoveHistoryToAlgebraic(moveHistory)}
                 </Typography>
               </Button>
