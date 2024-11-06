@@ -70,9 +70,9 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [isCheckmate, setIsCheckmate] = useState<boolean>(false);
   const [isGameActive, setIsGameActive] = useState(false);
-  const [time, setTime] = useState(300);
-  const [whiteTime, setWhiteTime] = useState(time * 1000);
-  const [blackTime, setBlackTime] = useState(time * 1000);
+  const [initialTime, setInitialTime] = useState(300);
+  const [whiteTime, setWhiteTime] = useState(initialTime * 1000);
+  const [blackTime, setBlackTime] = useState(initialTime * 1000);
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [legalMoves, setLegalMoves] = useState<[number, number][]>([]);
   const [moveHistory, setMoveHistory] =
@@ -184,6 +184,10 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setLegalMoves([]);
   };
 
+  const setTime = (time: number) => {
+    setInitialTime(time);
+  };
+
   const loadHistoryBoard = (moveHistory: MoveHistory) => {
     setBoard(deepCopyBoard(moveHistory.board));
     setFENString(moveHistory.fen);
@@ -193,8 +197,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetBoard = () => {
     setIsCheckmate(false);
     setIsGameActive(false);
-    setWhiteTime(time * 1000);
-    setBlackTime(time * 1000);
+    setWhiteTime(initialTime * 1000);
+    setBlackTime(initialTime * 1000);
     setBoard(initialBoardSetup());
     setCurrentPlayer("white");
     setLegalMoves([]);
