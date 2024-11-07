@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   checkCheckmate,
   getLegalMoves,
+  isPromotionMove,
   isValidMove,
   makeMove,
 } from "./chessLogic";
@@ -18,7 +19,8 @@ import {
   getHalfMoveClock,
   resetFENCounters,
 } from "./fenUtil";
-import { Board, Move, MoveHistory } from "./types";
+import { Board, Move, MoveHistory, Piece, PromotionPiece } from "./types";
+import { cp } from "fs";
 
 interface ChessContextProps {
   board: Board;
@@ -27,9 +29,16 @@ interface ChessContextProps {
   blackTime: number;
   isCheckmate: boolean;
   isGameActive: boolean;
+  promotionSquare: [number, number] | null;
+  promotionMove: Move | null;
   legalMoves: [number, number][];
   lastMove: Move | null;
   handleMove: (from: [number, number], to: [number, number]) => void;
+  completeMove: (
+    from: [number, number],
+    to: [number, number],
+    promotionPiece?: PromotionPiece
+  ) => void;
   handleLegalMove: (from: [number, number]) => void;
   resetLegalMove: () => void;
   resetBoard: () => void;
@@ -70,6 +79,10 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [isCheckmate, setIsCheckmate] = useState<boolean>(false);
   const [isGameActive, setIsGameActive] = useState(false);
+  const [promotionSquare, setPromotionSquare] = useState<
+    [number, number] | null
+  >(null);
+  const [promotionMove, setPromotionMove] = useState<Move | null>(null);
   const [initialTime, setInitialTime] = useState(300);
   const [whiteTime, setWhiteTime] = useState(initialTime * 1000);
   const [blackTime, setBlackTime] = useState(initialTime * 1000);
@@ -90,18 +103,42 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleMove = (from: [number, number], to: [number, number]) => {
     const move: Move = { from, to };
-    const piece = board[from[0]][from[1]];
 
+    if (
+      isValidMove(move, board, currentPlayer, lastMove, canCastle) &&
+      !isCheckmate
+    ) {
+      if (isPromotionMove(board, move)) {
+        setPromotionSquare(to);
+        setPromotionMove(move);
+      } else {
+        completeMove(from, to);
+      }
+    }
+  };
+
+  const completeMove = (
+    from: [number, number],
+    to: [number, number],
+    promotionPiece?: PromotionPiece
+  ) => {
+    const move: Move = { from, to };
+    const piece = board[from[0]][from[1]];
     const capturedPiece = board[to[0]][to[1]];
     if (isValidMove(move, board, currentPlayer, lastMove, canCastle)) {
-      const newBoard = makeMove(move, board);
+      const newBoard = makeMove(move, board, promotionPiece);
       const nextPlayer = currentPlayer === "white" ? "black" : "white";
+
+      setPromotionSquare(null);
+      setPromotionMove(null);
 
       setBoard(newBoard);
       setCurrentPlayer(nextPlayer);
       setLastMove(move);
       setLegalMoves([]);
-      setCastleState(updateCastleState(move, castleState));
+      setCastleState(
+        updateCastleState(move, piece, capturedPiece, castleState)
+      );
 
       const fen = boardToFEN(
         board,
@@ -149,21 +186,38 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateCastleState = (
     move: Move,
+    piece: Piece,
+    capturedPiece: Piece,
     castleState: {
       white: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
       black: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
     }
   ) => {
-    const piece = board[move.to[0]][move.to[1]];
     const color = currentPlayer;
+    const opponentColor = color === "white" ? "black" : "white";
 
     if (piece?.substring(1, 2) === "K") {
       castleState[color].king = true;
-    } else if (piece?.substring(1) === "R") {
+    }
+
+    if (piece?.substring(1, 2) === "R") {
       if (move.from[1] === 0) {
         castleState[color].rookQueenside = true;
       } else if (move.from[1] === 7) {
         castleState[color].rookKingside = true;
+      }
+    }
+    if (capturedPiece?.substring(1, 2) === "R") {
+      if (
+        move.to[0] === (opponentColor === "white" ? 7 : 0) &&
+        move.to[1] === 0
+      ) {
+        castleState[opponentColor].rookQueenside = true;
+      } else if (
+        move.to[0] === (opponentColor === "white" ? 7 : 0) &&
+        move.to[1] === 7
+      ) {
+        castleState[opponentColor].rookKingside = true;
       }
     }
 
@@ -197,6 +251,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetBoard = () => {
     setIsCheckmate(false);
     setIsGameActive(false);
+    setPromotionSquare(null);
+    setPromotionMove(null);
     setWhiteTime(initialTime * 1000);
     setBlackTime(initialTime * 1000);
     setBoard(initialBoardSetup());
@@ -215,9 +271,12 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     blackTime,
     isCheckmate,
     isGameActive,
+    promotionSquare,
+    promotionMove,
     legalMoves,
     lastMove,
     handleMove,
+    completeMove,
     handleLegalMove,
     resetLegalMove,
     resetBoard,

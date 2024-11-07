@@ -1,5 +1,7 @@
 export type Piece = 'wK' | 'wQ' | 'wR' | 'wB' | 'wN' | 'wP' | 'bK' | 'bQ' | 'bR' | 'bB' | 'bN' | 'bP' | null;
 
+export type PromotionPiece =  'Q' | 'R' | 'B' | 'N';
+
 export type Board = Piece[][];
 
 export type Move = {

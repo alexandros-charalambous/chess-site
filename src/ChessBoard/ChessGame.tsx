@@ -64,7 +64,6 @@ const ChessGame: React.FC = () => {
       </Grid2>
       <Grid2>
         <ChessTimer squareSize={squareSize} />
-        <PromotionBox squareSize={squareSize} />
       </Grid2>
     </Grid2>
   );

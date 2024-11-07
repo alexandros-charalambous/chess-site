@@ -1,4 +1,4 @@
-import { Board, Move } from './types';
+import { Board, Move, Piece, PromotionPiece } from './types';
 
 const isEnemyPiece = (from: string, to: string) => {
   if (to === null ) return false;
@@ -216,6 +216,16 @@ export const checkCheckmate = (
   return true;
 };
 
+export const isPromotionMove = (board: Board, move: Move) => {
+  const newBoard = board;
+  const piece = newBoard[move.from[0]][move.from[1]];
+
+  if (piece?.substring(1, 2) === 'P' && (move.to[0] === 0 || move.to[0] === 7)) {
+    return true;
+  }
+
+  return false;
+}
 
 const simulateMove = (board: Board, move: Move): Board => {
   const newBoard = board.map(row => [...row]); 
@@ -288,23 +298,34 @@ export const getLegalMoves = (
   return legalMoves;
 };
 
-export const makeMove = (move: Move, board: Board) => {
+export const makeMove = (move: Move, board: Board, promotionPiece?: PromotionPiece) => {
   const newBoard = board;
-  const piece = newBoard[move.from[0]][move.from[1]];
+  const piece = newBoard[move.from[0]][move.from[1]]; 
   
   if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] + 2) {
+    console.log("1");
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
     newBoard[move.from[0]][move.to[1] - 1] = newBoard[move.from[0]][move.from[1] + 3];
     newBoard[move.from[0]][move.from[1] + 3] = null;
   }
   else if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] - 2) {
+    console.log("2");
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
     newBoard[move.from[0]][move.to[1] + 1] = newBoard[move.from[0]][move.from[1] - 4];
     newBoard[move.from[0]][move.from[1] - 4] = null;
   }
+  else if (isPromotionMove(newBoard, move) && piece != null) {
+    console.log("3");
+    if (promotionPiece) {
+      const promotedPiece = (piece[0] + promotionPiece) as Piece;
+      newBoard[move.to[0]][move.to[1]] = promotedPiece;
+    } 
+    newBoard[move.from[0]][move.from[1]] = null;
+  }
   else if (piece?.substring(1,2) === 'P') {
+    console.log("4");
     const forward = piece?.substring(0,1) === 'w' ? -1 : 1;
     
     if (Math.abs(move.from[1] - move.to[1]) === 1 && newBoard[move.to[0]][move.to[1]] === null) {
@@ -314,6 +335,7 @@ export const makeMove = (move: Move, board: Board) => {
     newBoard[move.from[0]][move.from[1]] = null;
   }
   else {
+    console.log("5", piece);
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
   }

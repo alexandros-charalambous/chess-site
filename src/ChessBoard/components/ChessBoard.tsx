@@ -5,13 +5,18 @@ import React, { useState, useEffect } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { pieceImages } from "../../ChessLogic/chessUtils";
 import { ChessBoardProps } from "../ChessGame";
+import PromotionBox from "./PromotionBox";
+import { Piece, PromotionPiece } from "../../ChessLogic/types";
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const {
     board,
     currentPlayer,
+    promotionSquare,
+    promotionMove,
     legalMoves,
     handleMove,
+    completeMove,
     handleLegalMove,
     resetLegalMove,
   } = useChessContext();
@@ -28,6 +33,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     x: 0,
     y: 0,
   });
+  const [promotionPosition, setPromotionPosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
   const [hoveredSquare, setHoveredSquare] = useState<[number, number] | null>(
     null
   );
@@ -43,6 +52,12 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
+
+  useEffect(() => {
+    if (promotionSquare) {
+      setPromotionPosition(cursorPos);
+    }
+  }, [promotionSquare]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -162,6 +177,15 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
 
   return (
     <>
+      {promotionSquare && promotionMove && (
+        <PromotionBox
+          squareSize={squareSize}
+          cursorPos={promotionPosition}
+          onSelectPromotion={(piece: PromotionPiece) =>
+            completeMove(promotionMove.from, promotionMove.to, piece)
+          }
+        />
+      )}
       <Box
         id="chessboardSquare"
         sx={{

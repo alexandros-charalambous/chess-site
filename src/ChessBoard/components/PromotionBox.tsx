@@ -3,30 +3,36 @@ import { Box } from "@mui/material";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { ChessBoardProps } from "../ChessGame";
 import { pieceImages } from "../../ChessLogic/chessUtils";
+import { PromotionPiece } from "../../ChessLogic/types";
 
 interface PromotionBoxProps extends ChessBoardProps {
-  onSelectPromotion: (piece: string) => void;
+  cursorPos: { x: number; y: number };
+  onSelectPromotion: (piece: PromotionPiece) => void;
 }
 
-const PromotionBox: React.FC<ChessBoardProps> = ({ squareSize }) => {
+const PromotionBox: React.FC<PromotionBoxProps> = ({
+  squareSize,
+  cursorPos,
+  onSelectPromotion,
+}) => {
   const { currentPlayer } = useChessContext();
   const color = currentPlayer === "white" ? "w" : "b";
 
-  const promotionPieces =
-    currentPlayer === "white" ? ["Q", "R", "N", "B"] : ["B", "N", "R", "Q"];
+  const promotionPieces: PromotionPiece[] = ["Q", "R", "N", "B"];
 
   return (
     <Box
       sx={{
         position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
+        top: cursorPos.y,
+        left: cursorPos.x,
+        transform:
+          color == "w" ? "translate(-50%, 0%)" : "translate(-50%, -100%)",
         zIndex: 100,
         backgroundColor: "#dbdbdbcc",
         boxShadow: "0px 0px 10px 3px rgba(0, 0, 0, 0.5)",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: color == "w" ? "column" : "column-reverse",
         alignItems: "center",
       }}
     >
@@ -42,7 +48,7 @@ const PromotionBox: React.FC<ChessBoardProps> = ({ squareSize }) => {
             cursor: "pointer",
             "&:hover": { backgroundColor: "#f0f0f0" },
           }}
-          //   onClick={() => onSelectPromotion(`${color}${piece}`)}
+          onClick={() => onSelectPromotion(piece)}
         >
           <img
             src={pieceImages[`${color}${piece}`]}
