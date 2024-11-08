@@ -7,7 +7,7 @@ import NavigationButton from "./components/NavigationButton";
 const RightPanel: React.FC = () => {
   return (
     <>
-      <Stack spacing={1}>
+      <Grid2 container direction={"column"} spacing={1}>
         <Box
           sx={{
             boxShadow: "0 3px 4px 0px #000000",
@@ -16,13 +16,11 @@ const RightPanel: React.FC = () => {
         >
           <Stack spacing={1}>
             <MoveHistoryBox />
-            <Grid2 direction={"row"}>
-              <NavigationButton />
-            </Grid2>
+            <NavigationButton />
           </Stack>
         </Box>
         <FENBox />
-      </Stack>
+      </Grid2>
     </>
   );
 };

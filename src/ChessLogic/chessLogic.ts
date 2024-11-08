@@ -204,6 +204,7 @@ export const checkCheckmate = (
         for (const to of legalMoves) {
           const move: Move = { from, to };
           const simulatedBoard = simulateMove(board, move);
+          console.log(isKingInCheck(simulatedBoard, kingPosition, currentPlayer, castleState))
 
           if (!isKingInCheck(simulatedBoard, kingPosition, currentPlayer, castleState)) {
             return false;
@@ -303,21 +304,18 @@ export const makeMove = (move: Move, board: Board, promotionPiece?: PromotionPie
   const piece = newBoard[move.from[0]][move.from[1]]; 
   
   if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] + 2) {
-    console.log("1");
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
     newBoard[move.from[0]][move.to[1] - 1] = newBoard[move.from[0]][move.from[1] + 3];
     newBoard[move.from[0]][move.from[1] + 3] = null;
   }
   else if (piece?.substring(1, 2) === 'K' && move.to[1] === move.from[1] - 2) {
-    console.log("2");
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
     newBoard[move.from[0]][move.to[1] + 1] = newBoard[move.from[0]][move.from[1] - 4];
     newBoard[move.from[0]][move.from[1] - 4] = null;
   }
   else if (isPromotionMove(newBoard, move) && piece != null) {
-    console.log("3");
     if (promotionPiece) {
       const promotedPiece = (piece[0] + promotionPiece) as Piece;
       newBoard[move.to[0]][move.to[1]] = promotedPiece;
@@ -325,7 +323,6 @@ export const makeMove = (move: Move, board: Board, promotionPiece?: PromotionPie
     newBoard[move.from[0]][move.from[1]] = null;
   }
   else if (piece?.substring(1,2) === 'P') {
-    console.log("4");
     const forward = piece?.substring(0,1) === 'w' ? -1 : 1;
     
     if (Math.abs(move.from[1] - move.to[1]) === 1 && newBoard[move.to[0]][move.to[1]] === null) {
@@ -335,7 +332,6 @@ export const makeMove = (move: Move, board: Board, promotionPiece?: PromotionPie
     newBoard[move.from[0]][move.from[1]] = null;
   }
   else {
-    console.log("5", piece);
     newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = null;
   }

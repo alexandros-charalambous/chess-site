@@ -4,18 +4,21 @@ import { useChessContext } from "../../ChessLogic/ChessContext";
 import { ChessBoardProps } from "../ChessGame";
 import { pieceImages } from "../../ChessLogic/chessUtils";
 import { PromotionPiece } from "../../ChessLogic/types";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface PromotionBoxProps extends ChessBoardProps {
   cursorPos: { x: number; y: number };
   onSelectPromotion: (piece: PromotionPiece) => void;
+  onCancelPromotion: () => void;
 }
 
 const PromotionBox: React.FC<PromotionBoxProps> = ({
   squareSize,
   cursorPos,
   onSelectPromotion,
+  onCancelPromotion,
 }) => {
-  const { currentPlayer } = useChessContext();
+  const { currentPlayer, cancelPromotion } = useChessContext();
   const color = currentPlayer === "white" ? "w" : "b";
 
   const promotionPieces: PromotionPiece[] = ["Q", "R", "N", "B"];
@@ -61,6 +64,19 @@ const PromotionBox: React.FC<PromotionBoxProps> = ({
           />
         </Box>
       ))}
+      <Box
+        sx={{
+          width: squareSize,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          "&:hover": { backgroundColor: "#f0f0f0" },
+        }}
+        onClick={() => onCancelPromotion()}
+      >
+        <CloseIcon />
+      </Box>
     </Box>
   );
 };

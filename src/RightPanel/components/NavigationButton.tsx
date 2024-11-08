@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Grid2 } from "@mui/material";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
@@ -73,50 +73,52 @@ const NavigationButton: React.FC = () => {
 
   return (
     <>
-      <Button
-        sx={{
-          color: "#ffffff",
-          backgroundColor: "#4d2e22",
-          borderRadius: "0px",
-          width: "25%",
-        }}
-        onClick={goToFirstMove}
-      >
-        <KeyboardDoubleArrowLeftIcon fontSize="large" />
-      </Button>
-      <Button
-        sx={{
-          color: "#ffffff",
-          backgroundColor: "#4d2e22",
-          borderRadius: "0px",
-          width: "25%",
-        }}
-        onClick={goToPreviousMove}
-      >
-        <KeyboardArrowLeftIcon fontSize="large" />
-      </Button>
-      <Button
-        sx={{
-          color: "#ffffff",
-          backgroundColor: "#4d2e22",
-          borderRadius: "0px",
-          width: "25%",
-        }}
-        onClick={goToNextMove}
-      >
-        <KeyboardArrowRightIcon fontSize="large" />
-      </Button>
-      <Button
-        sx={{
-          color: "#ffffff",
-          backgroundColor: "#4d2e22",
-          borderRadius: "0px",
-          width: "25%",
-        }}
-        onClick={goToLastMove}
-      >
-        <KeyboardDoubleArrowRightIcon fontSize="large" />
-      </Button>
+      <Grid2 direction={"row"}>
+        <Button
+          sx={{
+            color: "#ffffff",
+            backgroundColor: "#4d2e22",
+            borderRadius: "0px",
+            width: "25%",
+          }}
+          onClick={goToFirstMove}
+        >
+          <KeyboardDoubleArrowLeftIcon fontSize="large" />
+        </Button>
+        <Button
+          sx={{
+            color: "#ffffff",
+            backgroundColor: "#4d2e22",
+            borderRadius: "0px",
+            width: "25%",
+          }}
+          onClick={goToPreviousMove}
+        >
+          <KeyboardArrowLeftIcon fontSize="large" />
+        </Button>
+        <Button
+          sx={{
+            color: "#ffffff",
+            backgroundColor: "#4d2e22",
+            borderRadius: "0px",
+            width: "25%",
+          }}
+          onClick={goToNextMove}
+        >
+          <KeyboardArrowRightIcon fontSize="large" />
+        </Button>
+        <Button
+          sx={{
+            color: "#ffffff",
+            backgroundColor: "#4d2e22",
+            borderRadius: "0px",
+            width: "25%",
+          }}
+          onClick={goToLastMove}
+        >
+          <KeyboardDoubleArrowRightIcon fontSize="large" />
+        </Button>
+      </Grid2>
     </>
   );
 };

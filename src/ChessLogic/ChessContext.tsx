@@ -39,6 +39,7 @@ interface ChessContextProps {
     to: [number, number],
     promotionPiece?: PromotionPiece
   ) => void;
+  cancelPromotion: () => void;
   handleLegalMove: (from: [number, number]) => void;
   resetLegalMove: () => void;
   resetBoard: () => void;
@@ -238,6 +239,11 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setLegalMoves([]);
   };
 
+  const cancelPromotion = () => {
+    setPromotionSquare(null);
+    setPromotionMove(null);
+  };
+
   const setTime = (time: number) => {
     setInitialTime(time);
   };
@@ -277,6 +283,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     lastMove,
     handleMove,
     completeMove,
+    cancelPromotion,
     handleLegalMove,
     resetLegalMove,
     resetBoard,

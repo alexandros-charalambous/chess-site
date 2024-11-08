@@ -17,6 +17,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     legalMoves,
     handleMove,
     completeMove,
+    cancelPromotion,
     handleLegalMove,
     resetLegalMove,
   } = useChessContext();
@@ -181,9 +182,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
         <PromotionBox
           squareSize={squareSize}
           cursorPos={promotionPosition}
-          onSelectPromotion={(piece: PromotionPiece) =>
+          onSelectPromotion={(piece?: PromotionPiece) =>
             completeMove(promotionMove.from, promotionMove.to, piece)
           }
+          onCancelPromotion={() => cancelPromotion()}
         />
       )}
       <Box
