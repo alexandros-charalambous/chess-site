@@ -47,7 +47,7 @@ const MoveHistoryBox: React.FC = () => {
         sx={{
           width: "25vw",
           height: "60vh",
-          padding: 2,
+          padding: "20px",
           overflowX: "hidden",
         }}
       >
@@ -58,11 +58,13 @@ const MoveHistoryBox: React.FC = () => {
               display: "flex",
               alignItems: "center",
               paddingLeft: "10px",
-              whiteSpace: "nowrap",
-              backgroundColor: rowIndex % 2 === 0 ? "" : "#00000021",
+              backgroundColor: rowIndex % 2 === 0 ? "" : "#00000059",
             }}
           >
-            <Typography color="#ffffff" style={{ marginRight: "10px" }}>
+            <Typography
+              color="#ffffff"
+              style={{ marginRight: 24, width: "24px" }}
+            >
               {rowIndex + 1}.
             </Typography>
 
@@ -86,11 +88,13 @@ const MoveHistoryBox: React.FC = () => {
                 sx={{
                   textTransform: "none",
                   borderRadius: "20px",
-                  marginRight: "10px",
+                  marginRight: 3,
+                  alignItems: "center",
+                  justifyContent: "space-evenly",
                 }}
                 onClick={() => loadHistoryBoard(moveHistory)}
               >
-                <Typography color="#ffffff" fontSize={20}>
+                <Typography color="#ffffff" fontSize={15}>
                   {formatMoveHistoryToAlgebraic(moveHistory)}
                 </Typography>
               </Button>

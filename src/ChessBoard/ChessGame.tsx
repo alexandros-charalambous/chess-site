@@ -12,7 +12,7 @@ export interface ChessBoardProps {
 }
 
 const ChessGame: React.FC = () => {
-  const [squareSize, setSquareSize] = useState<number>(90);
+  const [squareSize, setSquareSize] = useState<number>(120);
 
   // Function to determine the square size based on screen width
   // const updateSquareSize = () => {

@@ -73,13 +73,18 @@ const NavigationButton: React.FC = () => {
 
   return (
     <>
-      <Grid2 direction={"row"}>
+      <Grid2
+        direction={"row"}
+        sx={{ justifyContent: "space-around", display: "flex" }}
+      >
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#4d2e22",
-            borderRadius: "0px",
-            width: "25%",
+            backgroundColor: "#00000066",
+            "&:hover": { backgroundColor: "#20131066" },
+            borderRadius: "10px",
+            width: "23%",
+            margin: 1,
           }}
           onClick={goToFirstMove}
         >
@@ -88,9 +93,11 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#4d2e22",
-            borderRadius: "0px",
-            width: "25%",
+            backgroundColor: "#00000066",
+            "&:hover": { backgroundColor: "#20131066" },
+            borderRadius: "10px",
+            width: "23%",
+            margin: 1,
           }}
           onClick={goToPreviousMove}
         >
@@ -99,9 +106,11 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#4d2e22",
-            borderRadius: "0px",
-            width: "25%",
+            backgroundColor: "#00000066",
+            "&:hover": { backgroundColor: "#20131066" },
+            borderRadius: "10px",
+            width: "23%",
+            margin: 1,
           }}
           onClick={goToNextMove}
         >
@@ -110,9 +119,11 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#4d2e22",
-            borderRadius: "0px",
-            width: "25%",
+            backgroundColor: "#00000066",
+            "&:hover": { backgroundColor: "#20131066" },
+            borderRadius: "10px",
+            width: "23%",
+            margin: 1,
           }}
           onClick={goToLastMove}
         >
