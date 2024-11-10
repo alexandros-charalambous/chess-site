@@ -1,3 +1,2 @@
 fix index of move history (cannot play when not in latest move)
-add promotion
 add start game and checkmate

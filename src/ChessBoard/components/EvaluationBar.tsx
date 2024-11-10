@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
 import { Box, Tooltip, Typography } from "@mui/material";
+import React from "react";
+import { useChessContext } from "../../ChessLogic/ChessContext";
 import { useStockfishContext } from "../../ChessLogic/StockfishContext";
 import { ChessBoardProps } from "../ChessGame";
-import { useChessContext } from "../../ChessLogic/ChessContext";
 
 const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { evaluation, mate } = useStockfishContext();
@@ -26,13 +26,13 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
   return (
     <Tooltip
       title={
-        whitePercentage == 100 && isCheckmate
+        whitePercentage === 100 && isCheckmate
           ? `1-0`
-          : blackPercentage == 100 && isCheckmate
+          : blackPercentage === 100 && isCheckmate
           ? `0-1`
           : mate
           ? `M${Math.abs(mate)}`
-          : `${evaluation}`
+          : `${Math.abs(evaluation)}`
       }
       placement="right"
     >
@@ -69,7 +69,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
               color: "black",
             }}
           >
-            {whitePercentage == 100 && isCheckmate
+            {whitePercentage === 100 && isCheckmate
               ? `1-0`
               : mate && mate > 0
               ? `M${Math.abs(mate)}`
@@ -101,7 +101,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
               paddingTop: "3px",
             }}
           >
-            {blackPercentage == 100 && isCheckmate
+            {blackPercentage === 100 && isCheckmate
               ? `0-1`
               : mate && mate < 0
               ? `M${Math.abs(mate)}`
