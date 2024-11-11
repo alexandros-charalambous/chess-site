@@ -49,6 +49,7 @@ const MoveHistoryBox: React.FC = () => {
           height: "60vh",
           padding: "20px",
           overflowX: "hidden",
+          userSelect: "none",
         }}
       >
         {rows.map((row, rowIndex) => (

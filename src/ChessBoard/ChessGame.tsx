@@ -6,13 +6,14 @@ import RankText from "./components/RankText";
 import EvaluationBar from "./components/EvaluationBar";
 import ChessTimer from "./components/ChessTimer";
 import PromotionBox from "./components/PromotionBox";
+import GameMenuBox from "./components/GameMenuBox";
 
 export interface ChessBoardProps {
   squareSize: number;
 }
 
 const ChessGame: React.FC = () => {
-  const [squareSize, setSquareSize] = useState<number>(120);
+  const [squareSize, setSquareSize] = useState<number>(90);
 
   // Function to determine the square size based on screen width
   // const updateSquareSize = () => {
@@ -52,6 +53,7 @@ const ChessGame: React.FC = () => {
         userSelect: "none",
       }}
     >
+      <GameMenuBox />
       <Grid2>
         <EvaluationBar squareSize={squareSize} />
       </Grid2>

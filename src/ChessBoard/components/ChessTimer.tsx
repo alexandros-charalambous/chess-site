@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { Box, Grid2, Typography } from "@mui/material";
 import { ChessBoardProps } from "../ChessGame";
+import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 
 const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { currentPlayer, whiteTime, blackTime } = useChessContext();
@@ -29,16 +30,22 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
           height={squareSize / 2}
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-evenly",
             backgroundColor: currentPlayer == "black" ? "#2d2d2d" : "#2d2d2d80",
             borderRadius: "6px",
+            alignItems: "center",
           }}
         >
+          <TimerOutlinedIcon
+            sx={{
+              color: currentPlayer == "black" ? "#ffffff" : "#ffffffcc",
+              fontSize: "large",
+            }}
+          />
           <Typography
             fontSize={squareSize / 4}
             sx={{
-              alignContent: "center",
-              color: "#ffffff",
+              color: currentPlayer == "black" ? "#ffffff" : "#ffffffcc",
             }}
           >
             {formatTime(blackTime)}
@@ -48,16 +55,22 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
           height={squareSize / 2}
           sx={{
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-evenly",
             backgroundColor: currentPlayer == "white" ? "#ffffff" : "#ffffff80",
             borderRadius: "6px",
+            alignItems: "center",
           }}
         >
+          <TimerOutlinedIcon
+            sx={{
+              color: currentPlayer == "white" ? "#2d2d2d" : "#2d2d2dcc",
+              fontSize: "large",
+            }}
+          />
           <Typography
             fontSize={squareSize / 4}
             sx={{
-              alignContent: "center",
-              color: "#2d2d2d",
+              color: currentPlayer == "white" ? "#2d2d2d" : "#2d2d2dcc",
             }}
           >
             {formatTime(whiteTime)}

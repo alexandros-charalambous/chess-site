@@ -12,6 +12,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const {
     board,
     currentPlayer,
+    isGameActive,
     promotionSquare,
     promotionMove,
     legalMoves,
@@ -101,31 +102,35 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const isSelected = (from: [number, number]) => {
-    return (
-      selectedSquare &&
-      selectedSquare[0] === from[0] &&
-      selectedSquare[1] === from[1]
-    );
+    if (isGameActive) {
+      return (
+        selectedSquare &&
+        selectedSquare[0] === from[0] &&
+        selectedSquare[1] === from[1]
+      );
+    }
   };
 
   const handleSquareDrop = (from: [number, number], event?: MouseEvent) => {
-    if (event && event.button === 2) {
-      resetDragState();
-      resetLegalMove();
-      return;
-    }
+    if (isGameActive) {
+      if (event && event.button === 2) {
+        resetDragState();
+        resetLegalMove();
+        return;
+      }
 
-    if (selectedPiece) {
-      const selectedPieceFrom: [number, number] = selectedPiece.from;
-      const to: [number, number] = [from[0], from[1]];
+      if (selectedPiece) {
+        const selectedPieceFrom: [number, number] = selectedPiece.from;
+        const to: [number, number] = [from[0], from[1]];
 
-      if (isDragging) {
-        if (isLegalMove(to)) {
+        if (isDragging) {
+          if (isLegalMove(to)) {
+            handleMove(selectedPieceFrom, to);
+          }
+          resetDragState();
+        } else {
           handleMove(selectedPieceFrom, to);
         }
-        resetDragState();
-      } else {
-        handleMove(selectedPieceFrom, to);
       }
     }
   };
@@ -135,45 +140,55 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     piece: string,
     event: React.MouseEvent
   ) => {
-    if (event.button === 0) {
-      setSelectedPiece({ from: [from[0], from[1]], piece });
-      setSelectedSquare([from[0], from[1]]);
-      setIsDragging(true);
-      handleLegalMove([from[0], from[1]]);
+    if (isGameActive) {
+      if (event.button === 0) {
+        setSelectedPiece({ from: [from[0], from[1]], piece });
+        setSelectedSquare([from[0], from[1]]);
+        setIsDragging(true);
+        handleLegalMove([from[0], from[1]]);
+      }
     }
   };
 
   const handleSquareClick = (from: [number, number]) => {
-    const piece = board[from[0]][from[1]];
+    if (isGameActive) {
+      const piece = board[from[0]][from[1]];
 
-    if (
-      (piece?.substring(0, 1) === "w" && currentPlayer === "white") ||
-      (piece?.substring(0, 1) === "b" && currentPlayer === "black")
-    ) {
-      setSelectedPiece({ from: [from[0], from[1]], piece });
-      setSelectedSquare([from[0], from[1]]);
-      handleLegalMove([from[0], from[1]]);
-    } else if (selectedPiece) {
-      handleSquareDrop([from[0], from[1]]);
+      if (
+        (piece?.substring(0, 1) === "w" && currentPlayer === "white") ||
+        (piece?.substring(0, 1) === "b" && currentPlayer === "black")
+      ) {
+        setSelectedPiece({ from: [from[0], from[1]], piece });
+        setSelectedSquare([from[0], from[1]]);
+        handleLegalMove([from[0], from[1]]);
+      } else if (selectedPiece) {
+        handleSquareDrop([from[0], from[1]]);
+      }
     }
   };
 
   const resetDragState = () => {
-    setSelectedPiece(null);
-    setSelectedSquare(null);
-    setIsDragging(false);
-    setHoveredSquare(null);
-    resetLegalMove();
+    if (isGameActive) {
+      setSelectedPiece(null);
+      setSelectedSquare(null);
+      setIsDragging(false);
+      setHoveredSquare(null);
+      resetLegalMove();
+    }
   };
 
   const handleRightClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    resetDragState();
-    resetLegalMove();
+    if (isGameActive) {
+      event.preventDefault();
+      resetDragState();
+      resetLegalMove();
+    }
   };
 
   const handleMouseUp = (from: [number, number], event: React.MouseEvent) => {
-    handleSquareDrop(from, event.nativeEvent);
+    if (isGameActive) {
+      handleSquareDrop(from, event.nativeEvent);
+    }
   };
 
   return (

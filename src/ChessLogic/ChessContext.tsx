@@ -20,7 +20,6 @@ import {
   resetFENCounters,
 } from "./fenUtil";
 import { Board, Move, MoveHistory, Piece, PromotionPiece } from "./types";
-import { cp } from "fs";
 
 interface ChessContextProps {
   board: Board;

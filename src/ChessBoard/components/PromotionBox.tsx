@@ -18,7 +18,7 @@ const PromotionBox: React.FC<PromotionBoxProps> = ({
   onSelectPromotion,
   onCancelPromotion,
 }) => {
-  const { currentPlayer, cancelPromotion } = useChessContext();
+  const { currentPlayer } = useChessContext();
   const color = currentPlayer === "white" ? "w" : "b";
 
   const promotionPieces: PromotionPiece[] = ["Q", "R", "N", "B"];
