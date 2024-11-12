@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { useChessContext } from "../../ChessLogic/ChessContext";
-import { Box, Grid2, Typography } from "@mui/material";
-import { ChessBoardProps } from "../ChessGame";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
+import { Box, Typography } from "@mui/material";
+import React from "react";
+import { useChessContext } from "../../ChessLogic/ChessContext";
+import { ChessBoardProps } from "../ChessGame";
 
 const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
-  const { currentPlayer, whiteTime, blackTime } = useChessContext();
+  const { currentPlayer, whiteTime, blackTime, gameStarted } =
+    useChessContext();
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60000);
@@ -13,7 +14,7 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
     const milliseconds = Math.floor((time % 1000) / 100);
 
     if (time <= 30000) {
-      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}.${milliseconds}`;
+      return `:${seconds < 10 ? "0" : ""}${seconds}.${milliseconds}`;
     } else {
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     }
@@ -31,24 +32,24 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
           sx={{
             display: "flex",
             justifyContent: "space-evenly",
-            backgroundColor: currentPlayer == "black" ? "#2d2d2d" : "#2d2d2d80",
+            bgcolor: currentPlayer === "black" ? "#2d2d2d" : "#2d2d2d80",
             borderRadius: "6px",
             alignItems: "center",
           }}
         >
           <TimerOutlinedIcon
             sx={{
-              color: currentPlayer == "black" ? "#ffffff" : "#ffffffcc",
+              color: currentPlayer === "black" ? "#ffffff" : "#ffffffcc",
               fontSize: "large",
             }}
           />
           <Typography
             fontSize={squareSize / 4}
             sx={{
-              color: currentPlayer == "black" ? "#ffffff" : "#ffffffcc",
+              color: currentPlayer === "black" ? "#ffffff" : "#ffffffcc",
             }}
           >
-            {formatTime(blackTime)}
+            {gameStarted ? formatTime(blackTime) : "- - : - -"}
           </Typography>
         </Box>
         <Box
@@ -56,24 +57,24 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
           sx={{
             display: "flex",
             justifyContent: "space-evenly",
-            backgroundColor: currentPlayer == "white" ? "#ffffff" : "#ffffff80",
+            bgcolor: currentPlayer === "white" ? "#ffffff" : "#ffffff80",
             borderRadius: "6px",
             alignItems: "center",
           }}
         >
           <TimerOutlinedIcon
             sx={{
-              color: currentPlayer == "white" ? "#2d2d2d" : "#2d2d2dcc",
+              color: currentPlayer === "white" ? "#2d2d2d" : "#2d2d2dcc",
               fontSize: "large",
             }}
           />
           <Typography
             fontSize={squareSize / 4}
             sx={{
-              color: currentPlayer == "white" ? "#2d2d2d" : "#2d2d2dcc",
+              color: currentPlayer === "white" ? "#2d2d2d" : "#2d2d2dcc",
             }}
           >
-            {formatTime(whiteTime)}
+            {gameStarted ? formatTime(whiteTime) : "- - : - -"}
           </Typography>
         </Box>
       </Box>

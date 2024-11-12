@@ -6,7 +6,7 @@ import { ChessBoardProps } from "../ChessGame";
 
 const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const { evaluation, mate } = useStockfishContext();
-  const { isCheckmate } = useChessContext();
+  const { isCheckmate, isStalemate } = useChessContext();
 
   const maxEvaluation = 10;
   const normalizedEval = Math.max(
@@ -14,12 +14,13 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
     -maxEvaluation
   );
 
-  const whitePercentage =
-    mate === null
-      ? ((normalizedEval + maxEvaluation) / (2 * maxEvaluation)) * 100
-      : mate > 0
-      ? 100
-      : 0;
+  const whitePercentage = isStalemate
+    ? 50
+    : mate === null
+    ? ((normalizedEval + maxEvaluation) / (2 * maxEvaluation)) * 100
+    : mate > 0
+    ? 100
+    : 0;
   const blackPercentage =
     mate === null ? 100 - whitePercentage : mate < 0 ? 100 : 0;
 
@@ -30,6 +31,8 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           ? `1-0`
           : blackPercentage === 100 && isCheckmate
           ? `0-1`
+          : isStalemate
+          ? `0`
           : mate
           ? `M${Math.abs(mate)}`
           : `${Math.abs(evaluation)}`
@@ -48,7 +51,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
       >
         <Box
           sx={{
-            backgroundColor: "white",
+            bgcolor: "white",
             height: `${whitePercentage}%`,
             transition: "height 1s ease-in-out",
             display: "flex",
@@ -71,6 +74,8 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           >
             {whitePercentage === 100 && isCheckmate
               ? `1-0`
+              : isStalemate
+              ? `0`
               : mate && mate > 0
               ? `M${Math.abs(mate)}`
               : evaluation > 0
@@ -80,7 +85,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
         </Box>
         <Box
           sx={{
-            backgroundColor: "#2d2d2d",
+            bgcolor: "#2d2d2d",
             height: `${blackPercentage}%`,
             transition: "height 1s ease-in-out",
             display: "flex",
@@ -103,6 +108,8 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           >
             {blackPercentage === 100 && isCheckmate
               ? `0-1`
+              : isStalemate
+              ? `0`
               : mate && mate < 0
               ? `M${Math.abs(mate)}`
               : evaluation < 0

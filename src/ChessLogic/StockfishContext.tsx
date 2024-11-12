@@ -23,7 +23,7 @@ export const useStockfishContext = () => {
 export const StockfishProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { isCheckmate, FENString } = useChessContext();
+  const { isCheckmate, isStalemate, FENString } = useChessContext();
   const [depth, setDepth] = useState<number>(12);
   const [result, setResult] = useState<StockfishAPIResponse | null>(null);
   const [error, setError] = useState<string | null>();
@@ -36,7 +36,7 @@ export const StockfishProvider: React.FC<{ children: React.ReactNode }> = ({
   const StockfishAPI = async (depth: number) => {
     setError(null);
 
-    if (!isCheckmate) {
+    if (!isCheckmate && !isStalemate) {
       try {
         //https://chess-api.com/
         const response = await fetch("https://chess-api.com/v1", {

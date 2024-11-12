@@ -30,12 +30,12 @@ const PromotionBox: React.FC<PromotionBoxProps> = ({
         top: cursorPos.y,
         left: cursorPos.x,
         transform:
-          color == "w" ? "translate(-50%, 0%)" : "translate(-50%, -100%)",
+          color === "w" ? "translate(-50%, 0%)" : "translate(-50%, -100%)",
         zIndex: 100,
-        backgroundColor: "#dbdbdbcc",
+        bgcolor: "#dbdbdbcc",
         boxShadow: "0px 0px 10px 3px rgba(0, 0, 0, 0.5)",
         display: "flex",
-        flexDirection: color == "w" ? "column" : "column-reverse",
+        flexDirection: color === "w" ? "column" : "column-reverse",
         alignItems: "center",
       }}
     >
@@ -49,7 +49,7 @@ const PromotionBox: React.FC<PromotionBoxProps> = ({
             justifyContent: "center",
             alignItems: "center",
             cursor: "pointer",
-            "&:hover": { backgroundColor: "#f0f0f0" },
+            "&:hover": { bgcolor: "#f0f0f0" },
           }}
           onClick={() => onSelectPromotion(piece)}
         >
@@ -71,7 +71,7 @@ const PromotionBox: React.FC<PromotionBoxProps> = ({
           justifyContent: "center",
           alignItems: "center",
           cursor: "pointer",
-          "&:hover": { backgroundColor: "#f0f0f0" },
+          "&:hover": { bgcolor: "#f0f0f0" },
         }}
         onClick={() => onCancelPromotion()}
       >

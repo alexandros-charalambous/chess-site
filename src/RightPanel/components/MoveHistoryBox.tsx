@@ -59,7 +59,7 @@ const MoveHistoryBox: React.FC = () => {
               display: "flex",
               alignItems: "center",
               paddingLeft: "10px",
-              backgroundColor: rowIndex % 2 === 0 ? "" : "#00000059",
+              bgcolor: rowIndex % 2 === 0 ? "" : "#00000059",
             }}
           >
             <Typography
@@ -88,7 +88,7 @@ const MoveHistoryBox: React.FC = () => {
                 variant="text"
                 sx={{
                   textTransform: "none",
-                  borderRadius: "20px",
+                  borderRadius: "5px",
                   marginRight: 3,
                   alignItems: "center",
                   justifyContent: "space-evenly",

@@ -1,34 +1,129 @@
-import React, { useEffect } from "react";
-import { Box, Button, Typography, Modal } from "@mui/material";
+import { Box, Button, Fade, Grid2, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
-import { green } from "@mui/material/colors";
 
 const GameMenuBox: React.FC = () => {
-  const { isGameActive } = useChessContext();
+  const { gameStarted, startGame, setTime } = useChessContext();
+  const [selectedTime, setSelectedTime] = useState<number | null>(300);
+
+  const timeOptions = [
+    { label: "30 sec", time: 30 },
+    { label: "1 min", time: 60 },
+    { label: "3 min", time: 180 },
+    { label: "5 min", time: 300 },
+    { label: "10 min", time: 600 },
+    { label: "30 min", time: 1800 },
+  ];
+  const handleTimeSelection = (time: number) => {
+    setSelectedTime(time);
+    setTime(time);
+  };
 
   return (
     <>
-      {!isGameActive && (
+      <Fade in={!gameStarted}>
         <Box
           sx={{
             position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 300,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            boxShadow: "0 3px 4px 0px #000000",
+            width: "500px",
+            height: "350px",
             bgcolor: "#2d2d2d",
-            boxShadow: 24,
-            p: 4,
             borderRadius: 2,
             textAlign: "center",
             zIndex: 100,
           }}
         >
-          <Button variant="contained" sx={{ bgcolor: "green" }}>
-            Start
-          </Button>
+          <Box
+            sx={{
+              flex: 1,
+              p: 2,
+            }}
+          >
+            <Typography variant="h4" color="white" sx={{ fontWeight: "bold" }}>
+              Chess Game
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              bgcolor: "#1e1e1e",
+              flex: 4,
+              p: 2,
+            }}
+          >
+            <Typography
+              variant="h6"
+              color="white"
+              sx={{ fontWeight: "bold" }}
+              gutterBottom
+            >
+              Select Game Time
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                marginTop: 2,
+              }}
+            >
+              {timeOptions
+                .reduce((rows: JSX.Element[][], option, index) => {
+                  const rowIndex = Math.floor(index / 3);
+                  if (!rows[rowIndex]) rows[rowIndex] = [];
+                  rows[rowIndex].push(
+                    <Button
+                      key={option.time}
+                      variant="outlined"
+                      onClick={() => handleTimeSelection(option.time)}
+                      sx={{
+                        flex: 1,
+                        color: "white",
+                        bgcolor:
+                          selectedTime === option.time ? "#00800099" : "",
+                        borderColor: "green",
+                      }}
+                    >
+                      {option.label}
+                    </Button>
+                  );
+                  return rows;
+                }, [])
+                .map((row, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                      justifyContent: "center",
+                    }}
+                  >
+                    {row}
+                  </Box>
+                ))}
+            </Box>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              p: 2,
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{ bgcolor: "green", width: "100%", fontWeight: "bold" }}
+              onClick={() => startGame()}
+            >
+              New Game
+            </Button>
+          </Box>
         </Box>
-      )}
+      </Fade>
     </>
   );
 };

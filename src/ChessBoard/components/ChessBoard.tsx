@@ -1,18 +1,18 @@
 import { Circle } from "@mui/icons-material";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 import { Box } from "@mui/material/";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 import { pieceImages } from "../../ChessLogic/chessUtils";
+import { PromotionPiece } from "../../ChessLogic/types";
 import { ChessBoardProps } from "../ChessGame";
 import PromotionBox from "./PromotionBox";
-import { Piece, PromotionPiece } from "../../ChessLogic/types";
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const {
+    gameStarted,
     board,
     currentPlayer,
-    isGameActive,
     promotionSquare,
     promotionMove,
     legalMoves,
@@ -102,7 +102,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const isSelected = (from: [number, number]) => {
-    if (isGameActive) {
+    if (gameStarted) {
       return (
         selectedSquare &&
         selectedSquare[0] === from[0] &&
@@ -112,7 +112,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleSquareDrop = (from: [number, number], event?: MouseEvent) => {
-    if (isGameActive) {
+    if (gameStarted) {
       if (event && event.button === 2) {
         resetDragState();
         resetLegalMove();
@@ -140,7 +140,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     piece: string,
     event: React.MouseEvent
   ) => {
-    if (isGameActive) {
+    if (gameStarted) {
       if (event.button === 0) {
         setSelectedPiece({ from: [from[0], from[1]], piece });
         setSelectedSquare([from[0], from[1]]);
@@ -151,7 +151,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleSquareClick = (from: [number, number]) => {
-    if (isGameActive) {
+    if (gameStarted) {
       const piece = board[from[0]][from[1]];
 
       if (
@@ -168,7 +168,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const resetDragState = () => {
-    if (isGameActive) {
+    if (gameStarted) {
       setSelectedPiece(null);
       setSelectedSquare(null);
       setIsDragging(false);
@@ -178,7 +178,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleRightClick = (event: React.MouseEvent) => {
-    if (isGameActive) {
+    if (gameStarted) {
       event.preventDefault();
       resetDragState();
       resetLegalMove();
@@ -186,7 +186,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleMouseUp = (from: [number, number], event: React.MouseEvent) => {
-    if (isGameActive) {
+    if (gameStarted) {
       handleSquareDrop(from, event.nativeEvent);
     }
   };
@@ -229,7 +229,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: getSquareColor([rowIndex, colIndex]),
+                bgcolor: getSquareColor([rowIndex, colIndex]),
                 boxShadow:
                   isSelected([rowIndex, colIndex]) ||
                   (hoveredSquare &&

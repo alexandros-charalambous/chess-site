@@ -15,7 +15,7 @@ const FENBox: React.FC = () => {
         width: "25vw",
         height: "15px",
         padding: "20px",
-        backgroundColor: "#00000066",
+        bgcolor: "#00000066",
         boxShadow: "0 3px 4px 0px #000000",
         display: "flex",
         justifyContent: "space-between",

@@ -1,12 +1,11 @@
 import { Grid2 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ChessBoard from "./components/ChessBoard";
-import FileText from "./components/FileText";
-import RankText from "./components/RankText";
-import EvaluationBar from "./components/EvaluationBar";
 import ChessTimer from "./components/ChessTimer";
-import PromotionBox from "./components/PromotionBox";
+import EvaluationBar from "./components/EvaluationBar";
+import FileText from "./components/FileText";
 import GameMenuBox from "./components/GameMenuBox";
+import RankText from "./components/RankText";
 
 export interface ChessBoardProps {
   squareSize: number;
@@ -45,29 +44,31 @@ const ChessGame: React.FC = () => {
   // }, []);
 
   return (
-    <Grid2
-      container
-      direction={"row"}
-      spacing={2}
-      sx={{
-        userSelect: "none",
-      }}
-    >
+    <>
       <GameMenuBox />
-      <Grid2>
-        <EvaluationBar squareSize={squareSize} />
+      <Grid2
+        container
+        direction={"row"}
+        spacing={2}
+        sx={{
+          userSelect: "none",
+        }}
+      >
+        <Grid2>
+          <EvaluationBar squareSize={squareSize} />
+        </Grid2>
+        <Grid2>
+          <FileText squareSize={squareSize} />
+        </Grid2>
+        <Grid2>
+          <ChessBoard squareSize={squareSize} />
+          <RankText squareSize={squareSize} />
+        </Grid2>
+        <Grid2>
+          <ChessTimer squareSize={squareSize} />
+        </Grid2>
       </Grid2>
-      <Grid2>
-        <FileText squareSize={squareSize} />
-      </Grid2>
-      <Grid2>
-        <ChessBoard squareSize={squareSize} />
-        <RankText squareSize={squareSize} />
-      </Grid2>
-      <Grid2>
-        <ChessTimer squareSize={squareSize} />
-      </Grid2>
-    </Grid2>
+    </>
   );
 };
 

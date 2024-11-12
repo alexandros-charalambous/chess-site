@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   checkCheckmate,
+  checkStalemate,
   getLegalMoves,
   isPromotionMove,
   isValidMove,
@@ -22,16 +23,20 @@ import {
 import { Board, Move, MoveHistory, Piece, PromotionPiece } from "./types";
 
 interface ChessContextProps {
+  gameStarted: boolean;
   board: Board;
   currentPlayer: "white" | "black";
   whiteTime: number;
   blackTime: number;
   isCheckmate: boolean;
+  isStalemate: boolean;
   isGameActive: boolean;
   promotionSquare: [number, number] | null;
   promotionMove: Move | null;
   legalMoves: [number, number][];
   lastMove: Move | null;
+  startGame: () => void;
+  setTime: (time: number) => void;
   handleMove: (from: [number, number], to: [number, number]) => void;
   completeMove: (
     from: [number, number],
@@ -62,22 +67,22 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const initialCastleState = {
     white: {
-      king: false,
-      rookKingside: false,
-      rookQueenside: false,
+      kingSideCastle: false,
+      queenSideCastle: false,
     },
     black: {
-      king: false,
-      rookKingside: false,
-      rookQueenside: false,
+      kingSideCastle: false,
+      queenSideCastle: false,
     },
   };
 
+  const [gameStarted, setGameStarted] = useState(false);
   const [board, setBoard] = useState<Board>(initialBoardSetup);
   const [currentPlayer, setCurrentPlayer] = useState<"white" | "black">(
     "white"
   );
   const [isCheckmate, setIsCheckmate] = useState<boolean>(false);
+  const [isStalemate, setIsStalemate] = useState<boolean>(false);
   const [isGameActive, setIsGameActive] = useState(false);
   const [promotionSquare, setPromotionSquare] = useState<
     [number, number] | null
@@ -91,10 +96,9 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const [moveHistory, setMoveHistory] =
     useState<MoveHistory[]>(initialMoveHistory);
   const [castleState, setCastleState] = useState(initialCastleState);
-  const canCastle: [boolean, boolean, boolean] = [
-    castleState[currentPlayer].king,
-    castleState[currentPlayer].rookKingside,
-    castleState[currentPlayer].rookQueenside,
+  const canCastle: [boolean, boolean] = [
+    castleState[currentPlayer].kingSideCastle,
+    castleState[currentPlayer].queenSideCastle,
   ];
   const [FENString, setFENString] = useState<string>(initialFENString);
   const deepCopyBoard = (board: Board): Board => {
@@ -106,7 +110,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (
       isValidMove(move, board, currentPlayer, lastMove, canCastle) &&
-      !isCheckmate
+      !isCheckmate &&
+      !isStalemate
     ) {
       if (isPromotionMove(board, move)) {
         setPromotionSquare(to);
@@ -167,6 +172,11 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
       if (checkCheckmate(newBoard, nextPlayer, move, canCastle)) {
         setIsCheckmate(true);
         setIsGameActive(false);
+        setGameStarted(false);
+      } else if (checkStalemate(newBoard, nextPlayer, move, canCastle)) {
+        setIsStalemate(true);
+        setIsGameActive(false);
+        setGameStarted(false);
       }
     }
   };
@@ -189,22 +199,23 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     piece: Piece,
     capturedPiece: Piece,
     castleState: {
-      white: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
-      black: { king: boolean; rookKingside: boolean; rookQueenside: boolean };
+      white: { kingSideCastle: boolean; queenSideCastle: boolean };
+      black: { kingSideCastle: boolean; queenSideCastle: boolean };
     }
   ) => {
     const color = currentPlayer;
     const opponentColor = color === "white" ? "black" : "white";
 
     if (piece?.substring(1, 2) === "K") {
-      castleState[color].king = true;
+      castleState[color].kingSideCastle = true;
+      castleState[color].queenSideCastle = true;
     }
 
     if (piece?.substring(1, 2) === "R") {
       if (move.from[1] === 0) {
-        castleState[color].rookQueenside = true;
+        castleState[color].queenSideCastle = true;
       } else if (move.from[1] === 7) {
-        castleState[color].rookKingside = true;
+        castleState[color].kingSideCastle = true;
       }
     }
     if (capturedPiece?.substring(1, 2) === "R") {
@@ -212,12 +223,12 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
         move.to[0] === (opponentColor === "white" ? 7 : 0) &&
         move.to[1] === 0
       ) {
-        castleState[opponentColor].rookQueenside = true;
+        castleState[opponentColor].queenSideCastle = true;
       } else if (
         move.to[0] === (opponentColor === "white" ? 7 : 0) &&
         move.to[1] === 7
       ) {
-        castleState[opponentColor].rookKingside = true;
+        castleState[opponentColor].kingSideCastle = true;
       }
     }
 
@@ -253,8 +264,25 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setLegalMoves([]);
   };
 
-  const resetBoard = () => {
+  const startGame = () => {
+    setGameStarted(true);
     setIsCheckmate(false);
+    setIsStalemate(false);
+    setIsGameActive(false);
+    setWhiteTime(initialTime * 1000);
+    setBlackTime(initialTime * 1000);
+    setBoard(initialBoardSetup());
+    setCurrentPlayer("white");
+    setMoveHistory(initialMoveHistory);
+    setCastleState(initialCastleState);
+    setFENString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    resetFENCounters();
+  };
+
+  const resetBoard = () => {
+    setGameStarted(false);
+    setIsCheckmate(false);
+    setIsStalemate(false);
     setIsGameActive(false);
     setPromotionSquare(null);
     setPromotionMove(null);
@@ -270,16 +298,20 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const value = {
+    gameStarted,
     board,
     currentPlayer,
     whiteTime,
     blackTime,
     isCheckmate,
+    isStalemate,
     isGameActive,
     promotionSquare,
     promotionMove,
     legalMoves,
     lastMove,
+    startGame,
+    setTime,
     handleMove,
     completeMove,
     cancelPromotion,

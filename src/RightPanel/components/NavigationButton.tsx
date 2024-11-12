@@ -80,8 +80,8 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#00000066",
-            "&:hover": { backgroundColor: "#20131066" },
+            bgcolor: "#00000066",
+            "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
             margin: 1,
@@ -93,8 +93,8 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#00000066",
-            "&:hover": { backgroundColor: "#20131066" },
+            bgcolor: "#00000066",
+            "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
             margin: 1,
@@ -106,8 +106,8 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#00000066",
-            "&:hover": { backgroundColor: "#20131066" },
+            bgcolor: "#00000066",
+            "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
             margin: 1,
@@ -119,8 +119,8 @@ const NavigationButton: React.FC = () => {
         <Button
           sx={{
             color: "#ffffff",
-            backgroundColor: "#00000066",
-            "&:hover": { backgroundColor: "#20131066" },
+            bgcolor: "#00000066",
+            "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
             margin: 1,

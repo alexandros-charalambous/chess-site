@@ -12,7 +12,7 @@ const ResetButton: React.FC = () => {
           variant="contained"
           onClick={resetBoard}
           sx={{
-            backgroundColor: "#372118",
+            bgcolor: "#372118",
             width: "64px",
             height: "64px",
             borderRadius: "8px",
