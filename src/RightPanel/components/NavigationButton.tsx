@@ -7,42 +7,34 @@ import { useEffect, useState } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 
 const NavigationButton: React.FC = () => {
-  const { moveHistory, loadHistoryBoard } = useChessContext();
-
-  const [currentMoveIndex, setCurrentMoveIndex] = useState<number>(
-    moveHistory.length - 1
-  );
+  const { moveHistory, currentMoveIndex, loadHistoryBoard } = useChessContext();
 
   const goToFirstMove = () => {
-    loadHistoryBoard(moveHistory[0]);
-    setCurrentMoveIndex(0);
+    loadHistoryBoard(moveHistory[0], 0);
   };
   const goToPreviousMove = () => {
     if (currentMoveIndex === 0) {
-      loadHistoryBoard(moveHistory[0]);
-      setCurrentMoveIndex(0);
+      return;
     } else {
-      loadHistoryBoard(moveHistory[currentMoveIndex - 1]);
-      setCurrentMoveIndex(currentMoveIndex - 1);
+      loadHistoryBoard(moveHistory[currentMoveIndex - 1], currentMoveIndex - 1);
     }
   };
   const goToNextMove = () => {
     if (currentMoveIndex === moveHistory.length - 1) {
-      loadHistoryBoard(moveHistory[moveHistory.length - 1]);
-      setCurrentMoveIndex(moveHistory.length - 1);
+      loadHistoryBoard(
+        moveHistory[moveHistory.length - 1],
+        moveHistory.length - 1
+      );
     } else {
-      loadHistoryBoard(moveHistory[currentMoveIndex + 1]);
-      setCurrentMoveIndex(currentMoveIndex + 1);
+      loadHistoryBoard(moveHistory[currentMoveIndex + 1], currentMoveIndex + 1);
     }
   };
   const goToLastMove = () => {
-    loadHistoryBoard(moveHistory[moveHistory.length - 1]);
-    setCurrentMoveIndex(moveHistory.length - 1);
+    loadHistoryBoard(
+      moveHistory[moveHistory.length - 1],
+      moveHistory.length - 1
+    );
   };
-
-  useEffect(() => {
-    setCurrentMoveIndex(moveHistory.length - 1);
-  }, [moveHistory.length]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

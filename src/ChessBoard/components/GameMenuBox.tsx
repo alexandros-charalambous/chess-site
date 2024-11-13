@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useChessContext } from "../../ChessLogic/ChessContext";
 
 const GameMenuBox: React.FC = () => {
-  const { gameStarted, startGame, setTime } = useChessContext();
+  const { gameState, startGame, setTime } = useChessContext();
   const [selectedTime, setSelectedTime] = useState<number | null>(300);
 
   const timeOptions = [
@@ -21,7 +21,7 @@ const GameMenuBox: React.FC = () => {
 
   return (
     <>
-      <Fade in={!gameStarted}>
+      <Fade in={gameState === "initial"}>
         <Box
           sx={{
             position: "fixed",
@@ -29,12 +29,13 @@ const GameMenuBox: React.FC = () => {
             flexDirection: "column",
             overflow: "hidden",
             boxShadow: "0 3px 4px 0px #000000",
-            width: "500px",
+            width: "25%",
             height: "350px",
             bgcolor: "#2d2d2d",
             borderRadius: 2,
             textAlign: "center",
             zIndex: 100,
+            userSelect: "none",
           }}
         >
           <Box

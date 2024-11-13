@@ -5,8 +5,7 @@ import { useChessContext } from "../../ChessLogic/ChessContext";
 import { ChessBoardProps } from "../ChessGame";
 
 const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
-  const { currentPlayer, whiteTime, blackTime, gameStarted } =
-    useChessContext();
+  const { gameState, currentPlayer, whiteTime, blackTime } = useChessContext();
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60000);
@@ -49,7 +48,9 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
               color: currentPlayer === "black" ? "#ffffff" : "#ffffffcc",
             }}
           >
-            {gameStarted ? formatTime(blackTime) : "- - : - -"}
+            {gameState === "start" || gameState === "active"
+              ? formatTime(blackTime)
+              : "- - : - -"}
           </Typography>
         </Box>
         <Box
@@ -74,7 +75,9 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
               color: currentPlayer === "white" ? "#2d2d2d" : "#2d2d2dcc",
             }}
           >
-            {gameStarted ? formatTime(whiteTime) : "- - : - -"}
+            {gameState === "start" || gameState === "active"
+              ? formatTime(whiteTime)
+              : "- - : - -"}
           </Typography>
         </Box>
       </Box>

@@ -10,7 +10,7 @@ import PromotionBox from "./PromotionBox";
 
 const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   const {
-    gameStarted,
+    gameState,
     board,
     currentPlayer,
     promotionSquare,
@@ -21,6 +21,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     cancelPromotion,
     handleLegalMove,
     resetLegalMove,
+    moveHistory,
+    currentMoveIndex,
   } = useChessContext();
 
   const [selectedSquare, setSelectedSquare] = useState<[number, number] | null>(
@@ -98,11 +100,20 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     legalMoves.some((move) => move[0] === from[0] && move[1] === from[1]);
 
   const getSquareColor = (from: [number, number]) => {
+    if (
+      currentMoveIndex !== 0 &&
+      (JSON.stringify(moveHistory[currentMoveIndex].move.from) ===
+        JSON.stringify(from) ||
+        JSON.stringify(moveHistory[currentMoveIndex].move.to) ===
+          JSON.stringify(from))
+    ) {
+      return "#faff9f";
+    }
     return (from[0] + from[1]) % 2 === 0 ? "#f0d9b5" : "#b58863";
   };
 
   const isSelected = (from: [number, number]) => {
-    if (gameStarted) {
+    if (gameState === "start" || gameState === "active") {
       return (
         selectedSquare &&
         selectedSquare[0] === from[0] &&
@@ -112,7 +123,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleSquareDrop = (from: [number, number], event?: MouseEvent) => {
-    if (gameStarted) {
+    if (
+      (gameState === "start" || gameState === "active") &&
+      currentMoveIndex === moveHistory.length - 1
+    ) {
       if (event && event.button === 2) {
         resetDragState();
         resetLegalMove();
@@ -140,7 +154,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     piece: string,
     event: React.MouseEvent
   ) => {
-    if (gameStarted) {
+    if (
+      (gameState === "start" || gameState === "active") &&
+      currentMoveIndex === moveHistory.length - 1
+    ) {
       if (event.button === 0) {
         setSelectedPiece({ from: [from[0], from[1]], piece });
         setSelectedSquare([from[0], from[1]]);
@@ -151,7 +168,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleSquareClick = (from: [number, number]) => {
-    if (gameStarted) {
+    if (
+      (gameState === "start" || gameState === "active") &&
+      currentMoveIndex === moveHistory.length - 1
+    ) {
       const piece = board[from[0]][from[1]];
 
       if (
@@ -168,7 +188,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const resetDragState = () => {
-    if (gameStarted) {
+    if (
+      (gameState === "start" || gameState === "active") &&
+      currentMoveIndex === moveHistory.length - 1
+    ) {
       setSelectedPiece(null);
       setSelectedSquare(null);
       setIsDragging(false);
@@ -178,7 +201,7 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleRightClick = (event: React.MouseEvent) => {
-    if (gameStarted) {
+    if (gameState === "start" || gameState === "active") {
       event.preventDefault();
       resetDragState();
       resetLegalMove();
@@ -186,7 +209,10 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
   };
 
   const handleMouseUp = (from: [number, number], event: React.MouseEvent) => {
-    if (gameStarted) {
+    if (
+      (gameState === "start" || gameState === "active") &&
+      currentMoveIndex === moveHistory.length - 1
+    ) {
       handleSquareDrop(from, event.nativeEvent);
     }
   };

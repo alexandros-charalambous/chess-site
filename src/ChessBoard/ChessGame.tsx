@@ -6,6 +6,7 @@ import EvaluationBar from "./components/EvaluationBar";
 import FileText from "./components/FileText";
 import GameMenuBox from "./components/GameMenuBox";
 import RankText from "./components/RankText";
+import ResultBox from "./components/ResultBox";
 
 export interface ChessBoardProps {
   squareSize: number;
@@ -46,6 +47,7 @@ const ChessGame: React.FC = () => {
   return (
     <>
       <GameMenuBox />
+      <ResultBox />
       <Grid2
         container
         direction={"row"}

@@ -11,6 +11,7 @@ export const initialBoardSetup = (): Board => [
   ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
 ];
 
+
 export const pieceImages: { [key: string]: string } = {
   wP: "/assets/white-pawn.png",
   wR: "/assets/white-rook.png",

@@ -93,7 +93,7 @@ const MoveHistoryBox: React.FC = () => {
                   alignItems: "center",
                   justifyContent: "space-evenly",
                 }}
-                onClick={() => loadHistoryBoard(moveHistory)}
+                onClick={() => loadHistoryBoard(moveHistory, index + 1)}
               >
                 <Typography color="#ffffff" fontSize={15}>
                   {formatMoveHistoryToAlgebraic(moveHistory)}
