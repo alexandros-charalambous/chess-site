@@ -64,7 +64,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           <Typography
             sx={{
               position: "absolute",
-              fontSize: squareSize / 10,
+              fontSize: squareSize / 12,
               bottom: 0,
               left: "50%",
               transform: "translateX(-50%)",
@@ -98,7 +98,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           <Typography
             sx={{
               position: "absolute",
-              fontSize: squareSize / 10,
+              fontSize: squareSize / 12,
               top: 0,
               left: "50%",
               transform: "translateX(-50%)",

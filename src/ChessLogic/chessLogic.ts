@@ -518,3 +518,41 @@ export const makeMove = (
 
   return newBoard;
 };
+
+export const updateCastleState = (
+  move: Move,
+  piece: Piece,
+  capturedPiece: Piece,
+  castleState: {
+    white: { kingSideCastle: boolean; queenSideCastle: boolean };
+    black: { kingSideCastle: boolean; queenSideCastle: boolean };
+  },
+  currentPlayer: "white" | "black"
+) => {
+  const enemyColor = currentPlayer === "white" ? "black" : "white";
+
+  if (piece?.substring(1, 2) === "K") {
+    castleState[currentPlayer].kingSideCastle = true;
+    castleState[currentPlayer].queenSideCastle = true;
+  }
+
+  if (piece?.substring(1, 2) === "R") {
+    if (move.from[1] === 0) {
+      castleState[currentPlayer].queenSideCastle = true;
+    } else if (move.from[1] === 7) {
+      castleState[currentPlayer].kingSideCastle = true;
+    }
+  }
+  if (capturedPiece?.substring(1, 2) === "R") {
+    if (move.to[0] === (enemyColor === "white" ? 7 : 0) && move.to[1] === 0) {
+      castleState[enemyColor].queenSideCastle = true;
+    } else if (
+      move.to[0] === (enemyColor === "white" ? 7 : 0) &&
+      move.to[1] === 7
+    ) {
+      castleState[enemyColor].kingSideCastle = true;
+    }
+  }
+
+  return castleState;
+};

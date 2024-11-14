@@ -117,7 +117,11 @@ const GameMenuBox: React.FC = () => {
           >
             <Button
               variant="contained"
-              sx={{ bgcolor: "green", width: "100%", fontWeight: "bold" }}
+              sx={{
+                bgcolor: "green",
+                width: "100%",
+                fontWeight: "bold",
+              }}
               onClick={() => startGame()}
             >
               New Game

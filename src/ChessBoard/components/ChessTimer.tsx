@@ -48,7 +48,9 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
               color: currentPlayer === "black" ? "#ffffff" : "#ffffffcc",
             }}
           >
-            {gameState === "start" || gameState === "active"
+            {gameState === "start" ||
+            gameState === "active" ||
+            gameState === "end"
               ? formatTime(blackTime)
               : "- - : - -"}
           </Typography>
@@ -75,7 +77,9 @@ const ChessTimer: React.FC<ChessBoardProps> = ({ squareSize }) => {
               color: currentPlayer === "white" ? "#2d2d2d" : "#2d2d2dcc",
             }}
           >
-            {gameState === "start" || gameState === "active"
+            {gameState === "start" ||
+            gameState === "active" ||
+            gameState === "end"
               ? formatTime(whiteTime)
               : "- - : - -"}
           </Typography>

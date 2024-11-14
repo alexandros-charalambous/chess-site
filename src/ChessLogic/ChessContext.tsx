@@ -6,6 +6,7 @@ import {
   isPromotionMove,
   isValidMove,
   makeMove,
+  updateCastleState,
 } from "./chessLogic";
 import {
   initialBoardSetup,
@@ -102,7 +103,9 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const [promotionMove, setPromotionMove] = useState<Move | null>(null);
   const [initialTime, setInitialTime] = useState(300);
   const [whiteTime, setWhiteTime] = useState(initialTime * 1000);
+  const [tempWhiteTime, setTempWhiteTime] = useState(initialTime * 1000);
   const [blackTime, setBlackTime] = useState(initialTime * 1000);
+  const [tempblackTime, setTempBlackTime] = useState(initialTime * 1000);
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const [legalMoves, setLegalMoves] = useState<[number, number][]>([]);
   const [moveHistory, setMoveHistory] =
@@ -116,6 +119,11 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     castleState[currentPlayer].queenSideCastle,
   ];
   const [FENString, setFENString] = useState<string>(initialFENString);
+
+  const setTime = (time: number) => {
+    setInitialTime(time);
+  };
+
   const deepCopyBoard = (board: Board): Board => {
     return board.map((row) => [...row]);
   };
@@ -157,7 +165,13 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
       setLastMove(move);
       setLegalMoves([]);
       setCastleState(
-        updateCastleState(move, piece, capturedPiece, castleState)
+        updateCastleState(
+          move,
+          piece,
+          capturedPiece,
+          castleState,
+          currentPlayer
+        )
       );
 
       const fen = boardToFEN(
@@ -175,6 +189,7 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
           board: deepCopyBoard(board),
           piece,
           capturedPiece: capturedPiece || undefined,
+          moveTime: getMoveTime(),
           fen,
         };
         return [...prevHistory, newMove];
@@ -199,6 +214,18 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const getMoveTime = (): number => {
+    if (currentPlayer === "white") {
+      const moveTime = tempWhiteTime - whiteTime;
+      setTempWhiteTime(tempWhiteTime - moveTime);
+      return moveTime;
+    } else {
+      const moveTime = tempblackTime - blackTime;
+      setTempBlackTime(tempblackTime - moveTime);
+      return moveTime;
+    }
+  };
+
   useEffect(() => {
     if (gameState !== "active") return;
 
@@ -211,47 +238,6 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 100);
     return () => clearInterval(timer);
   }, [currentPlayer, gameState]);
-
-  const updateCastleState = (
-    move: Move,
-    piece: Piece,
-    capturedPiece: Piece,
-    castleState: {
-      white: { kingSideCastle: boolean; queenSideCastle: boolean };
-      black: { kingSideCastle: boolean; queenSideCastle: boolean };
-    }
-  ) => {
-    const color = currentPlayer;
-    const opponentColor = color === "white" ? "black" : "white";
-
-    if (piece?.substring(1, 2) === "K") {
-      castleState[color].kingSideCastle = true;
-      castleState[color].queenSideCastle = true;
-    }
-
-    if (piece?.substring(1, 2) === "R") {
-      if (move.from[1] === 0) {
-        castleState[color].queenSideCastle = true;
-      } else if (move.from[1] === 7) {
-        castleState[color].kingSideCastle = true;
-      }
-    }
-    if (capturedPiece?.substring(1, 2) === "R") {
-      if (
-        move.to[0] === (opponentColor === "white" ? 7 : 0) &&
-        move.to[1] === 0
-      ) {
-        castleState[opponentColor].queenSideCastle = true;
-      } else if (
-        move.to[0] === (opponentColor === "white" ? 7 : 0) &&
-        move.to[1] === 7
-      ) {
-        castleState[opponentColor].kingSideCastle = true;
-      }
-    }
-
-    return castleState;
-  };
 
   const handleLegalMove = (from: [number, number]) => {
     if (board[from[0]][from[1]] === null) {
@@ -270,10 +256,6 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
   const cancelPromotion = () => {
     setPromotionSquare(null);
     setPromotionMove(null);
-  };
-
-  const setTime = (time: number) => {
-    setInitialTime(time);
   };
 
   const loadHistoryBoard = (moveHistory: MoveHistory, index: number) => {
@@ -308,7 +290,9 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setPromotionSquare(null);
     setPromotionMove(null);
     setWhiteTime(initialTime * 1000);
+    setTempWhiteTime(initialTime * 1000);
     setBlackTime(initialTime * 1000);
+    setTempBlackTime(initialTime * 1000);
     setBoard(initialBoardSetup());
     setCurrentPlayer("white");
     setLegalMoves([]);
