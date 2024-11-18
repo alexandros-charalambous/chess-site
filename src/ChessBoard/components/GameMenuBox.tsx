@@ -29,7 +29,7 @@ const GameMenuBox: React.FC = () => {
             flexDirection: "column",
             overflow: "hidden",
             boxShadow: "0 3px 4px 0px #000000",
-            width: "25%",
+            width: "20%",
             height: "350px",
             bgcolor: "#2d2d2d",
             borderRadius: 2,
@@ -118,7 +118,12 @@ const GameMenuBox: React.FC = () => {
             <Button
               variant="contained"
               sx={{
-                bgcolor: "green",
+                bgcolor: "#008000",
+                boxShadow: "0 5px 0px #004f00",
+                "&:hover": {
+                  bgcolor: "#009300",
+                  boxShadow: "0 5px 0px #004f00",
+                },
                 width: "100%",
                 fontWeight: "bold",
               }}

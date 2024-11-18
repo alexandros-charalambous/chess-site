@@ -13,6 +13,8 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
     gameState,
     board,
     currentPlayer,
+    whiteTime,
+    blackTime,
     promotionSquare,
     promotionMove,
     legalMoves,
@@ -62,6 +64,16 @@ const ChessBoard: React.FC<ChessBoardProps> = ({ squareSize }) => {
       setPromotionPosition(cursorPos);
     }
   }, [promotionSquare]);
+
+  useEffect(() => {
+    if (whiteTime <= 0 || blackTime <= 0) {
+      setSelectedPiece(null);
+      setSelectedSquare(null);
+      setIsDragging(false);
+      setHoveredSquare(null);
+      resetLegalMove();
+    }
+  }, [whiteTime, blackTime]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {

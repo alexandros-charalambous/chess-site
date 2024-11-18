@@ -14,7 +14,7 @@ const ResultBox: React.FC = () => {
   useEffect(() => {
     switch (result.method) {
       case "checkmate":
-        setResultString(`won by checkmate!`);
+        setResultString(`by checkmate!`);
         break;
       case "stalemate":
         setResultString(`by stalemate!`);
@@ -26,13 +26,18 @@ const ResultBox: React.FC = () => {
         setResultString(`by repetition!`);
         break;
       case "timeout":
-        setResultString(`won by time out!`);
+        setResultString(`by timeout!`);
         break;
     }
   }, [result]);
 
   const closeResultBox = () => {
     setBoxOpen(false);
+  };
+
+  const newGame = () => {
+    setBoxOpen(false);
+    startGame();
   };
 
   return (
@@ -45,7 +50,7 @@ const ResultBox: React.FC = () => {
             flexDirection: "column",
             overflow: "hidden",
             boxShadow: "0 3px 4px 0px #000000",
-            width: "25%",
+            width: "20%",
             height: "350px",
             bgcolor: "#2d2d2d",
             borderRadius: 2,
@@ -64,11 +69,13 @@ const ResultBox: React.FC = () => {
             }}
           >
             <Typography
-              variant="h3"
+              variant="h4"
               color="#ffffff"
               sx={{ fontWeight: "bold" }}
             >
-              {result.winner}
+              {result.winner === "Draw"
+                ? result.winner
+                : `${result.winner} won`}
             </Typography>
             <Typography
               variant="body1"
@@ -82,6 +89,7 @@ const ResultBox: React.FC = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
+              justifyContent: "flex-end",
               bgcolor: "#1e1e1e",
               flex: 4,
               p: 2,
@@ -89,7 +97,16 @@ const ResultBox: React.FC = () => {
           >
             <Button
               variant="contained"
-              sx={{ bgcolor: "green", width: "100%", fontWeight: "bold" }}
+              sx={{
+                bgcolor: "#008000",
+                boxShadow: "0 5px 0px #004f00",
+                "&:hover": {
+                  bgcolor: "#009300",
+                  boxShadow: "0 5px 0px #004f00",
+                },
+                width: "100%",
+                fontWeight: "bold",
+              }}
               onClick={() => closeResultBox()}
             >
               Game Review
@@ -103,8 +120,17 @@ const ResultBox: React.FC = () => {
           >
             <Button
               variant="contained"
-              sx={{ bgcolor: "green", width: "100%", fontWeight: "bold" }}
-              onClick={() => startGame()}
+              sx={{
+                bgcolor: "#008000",
+                boxShadow: "0 5px 0px #004f00",
+                "&:hover": {
+                  bgcolor: "#009300",
+                  boxShadow: "0 5px 0px #004f00",
+                },
+                width: "100%",
+                fontWeight: "bold",
+              }}
+              onClick={() => newGame()}
             >
               New Game
             </Button>

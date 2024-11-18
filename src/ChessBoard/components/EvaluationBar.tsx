@@ -34,7 +34,7 @@ const EvaluationBar: React.FC<ChessBoardProps> = ({ squareSize }) => {
           : isStalemate
           ? `0`
           : mate
-          ? `M${Math.abs(mate)}`
+          ? `Mate in ${Math.abs(mate)}`
           : `${Math.abs(evaluation)}`
       }
       placement="right"

@@ -30,6 +30,8 @@ export type MoveHistory = {
   piece: Piece;
   capturedPiece?: Piece;
   moveTime: number;
+  isCheck: boolean;
+  isCheckmate: boolean;
   fen: string;
 };
 

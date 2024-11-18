@@ -51,6 +51,8 @@ export const initialMoveHistory = (): MoveHistory[] => [
     board: initialBoardSetup().map((row) => [...row]),
     piece: null,
     moveTime: 0,
+    isCheck: false,
+    isCheckmate: false,
     fen: initialFENString,
   },
 ];

@@ -48,7 +48,7 @@ export const StockfishProvider: React.FC<{ children: React.ReactNode }> = ({
             fen: `${FENString}`,
             variants: 3,
             depth: depth,
-            maxThinkingTime: 50,
+            // maxThinkingTime: 50,
           }),
         });
 

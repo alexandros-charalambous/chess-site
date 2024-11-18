@@ -1,6 +1,6 @@
 import { Button, Tooltip } from "@mui/material";
-import { useChessContext } from "./ChessLogic/ChessContext";
 import ReplayIcon from "@mui/icons-material/Replay";
+import { useChessContext } from "../ChessLogic/ChessContext";
 
 const ResetButton: React.FC = () => {
   const { resetBoard } = useChessContext();

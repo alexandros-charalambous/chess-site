@@ -26,7 +26,13 @@ const MoveHistoryBox: React.FC = () => {
   };
 
   const formatMoveHistoryToAlgebraic = (moveHistory: MoveHistory): string => {
-    const { move: moveDetails, piece, capturedPiece } = moveHistory;
+    const {
+      move: moveDetails,
+      piece,
+      isCheck,
+      isCheckmate,
+      capturedPiece,
+    } = moveHistory;
     const pieceNotation = getPieceNotation(piece);
     const toNotation = chessNotations(moveDetails.to[0], moveDetails.to[1]);
 
@@ -40,6 +46,12 @@ const MoveHistoryBox: React.FC = () => {
       } else if (moveDetails.from[1] === 4 && moveDetails.to[1] === 2) {
         moveString = `O-O-O`;
       }
+    }
+
+    if (isCheckmate) {
+      moveString += "#";
+    } else if (isCheck) {
+      moveString += "+";
     }
 
     return moveString;
@@ -112,7 +124,9 @@ const MoveHistoryBox: React.FC = () => {
                     alignItems: "center",
                     justifyContent: "space-evenly",
                   }}
-                  onClick={() => loadHistoryBoard(moveHistory, index + 1)}
+                  onClick={() =>
+                    loadHistoryBoard(moveHistory, index + rowIndex * 2 + 1)
+                  }
                 >
                   <Typography color="#ffffff" fontSize={15}>
                     {formatMoveHistoryToAlgebraic(moveHistory)}

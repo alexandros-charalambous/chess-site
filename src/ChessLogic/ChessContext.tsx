@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
+  checkCheck,
   checkCheckmate,
   checkStalemate,
   getLegalMoves,
@@ -30,6 +31,7 @@ import {
   PromotionPiece,
   Result,
 } from "./types";
+import { wait } from "@testing-library/user-event/dist/utils";
 
 interface ChessContextProps {
   gameState: GameState;
@@ -122,6 +124,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setTime = (time: number) => {
     setInitialTime(time);
+    setWhiteTime(time * 1000);
+    setBlackTime(time * 1000);
   };
 
   const deepCopyBoard = (board: Board): Board => {
@@ -190,6 +194,8 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
           piece,
           capturedPiece: capturedPiece || undefined,
           moveTime: getMoveTime(),
+          isCheck: checkCheck(newBoard, nextPlayer, canCastle),
+          isCheckmate: checkCheckmate(newBoard, nextPlayer, move, canCastle),
           fen,
         };
         return [...prevHistory, newMove];
@@ -205,14 +211,30 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
           winner: currentPlayer === "white" ? "White" : "Black",
           method: "checkmate",
         });
-        setGameState("end");
+        setTimeout(() => {
+          setGameState("end");
+        }, 800);
       } else if (checkStalemate(newBoard, nextPlayer, move, canCastle)) {
         setIsStalemate(true);
         setResult({ winner: "Draw", method: "stalemate" });
-        setGameState("end");
+        setTimeout(() => {
+          setGameState("end");
+        }, 800);
       }
     }
   };
+
+  useEffect(() => {
+    if (blackTime <= 0 || whiteTime <= 0) {
+      setResult({
+        winner: blackTime <= 0 ? "White" : "Black",
+        method: "timeout",
+      });
+      setTimeout(() => {
+        setGameState("end");
+      }, 800);
+    }
+  }, [whiteTime, blackTime]);
 
   const getMoveTime = (): number => {
     if (currentPlayer === "white") {
@@ -274,10 +296,13 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsCheckmate(false);
     setIsStalemate(false);
     setWhiteTime(initialTime * 1000);
+    setTempWhiteTime(initialTime * 1000);
     setBlackTime(initialTime * 1000);
+    setTempBlackTime(initialTime * 1000);
     setBoard(initialBoardSetup());
     setCurrentPlayer("white");
     setMoveHistory(initialMoveHistory);
+    setCurrentMoveIndex(0);
     setCastleState(initialCastleState);
     setFENString("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     resetFENCounters();

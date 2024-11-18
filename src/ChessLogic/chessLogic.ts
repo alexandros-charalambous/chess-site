@@ -26,7 +26,12 @@ const kingMove = (
         board[row][from[1] + 1] === null &&
         board[row][from[1] + 2] === null &&
         kingPath.every(
-          (pos) => !isKingInCheck(board, pos, pieceColor, castleState)
+          (pos) =>
+            !isKingInCheck(
+              simulateMove(board, { from: from, to: pos }),
+              pieceColor,
+              castleState
+            )
         )
       ) {
         return true;
@@ -47,7 +52,12 @@ const kingMove = (
         board[row][from[1] - 2] === null &&
         board[row][from[1] - 3] === null &&
         kingPath.every(
-          (pos) => !isKingInCheck(board, pos, pieceColor, castleState)
+          (pos) =>
+            !isKingInCheck(
+              simulateMove(board, { from: from, to: pos }),
+              pieceColor,
+              castleState
+            )
         )
       ) {
         return true;
@@ -236,7 +246,6 @@ const pieceMoves: {
 
 const isKingInCheck = (
   board: Board,
-  kingPosition: [number, number],
   player: "white" | "black",
   castleState: [boolean, boolean]
 ): boolean => {
@@ -247,7 +256,7 @@ const isKingInCheck = (
         const pieceType = piece.substring(1, 2);
 
         const canMoveToKing = pieceMoves[pieceType](
-          kingPosition,
+          getKingPosition(board, player),
           [row, col],
           board,
           player,
@@ -264,16 +273,21 @@ const isKingInCheck = (
   return false;
 };
 
+export const checkCheck = (
+  board: Board,
+  player: "white" | "black",
+  castleState: [boolean, boolean]
+) => {
+  return isKingInCheck(board, player, castleState);
+};
+
 export const checkCheckmate = (
   board: Board,
   player: "white" | "black",
   lastMove: Move | null,
   castleState: [boolean, boolean]
 ): boolean => {
-  if (
-    !isKingInCheck(board, getKingPosition(board, player), player, castleState)
-  )
-    return false;
+  if (!isKingInCheck(board, player, castleState)) return false;
 
   for (let row = 0; row < 8; row++) {
     for (let col = 0; col < 8; col++) {
@@ -291,14 +305,7 @@ export const checkCheckmate = (
         for (const to of legalMoves) {
           const move: Move = { from, to };
           const simulatedBoard = simulateMove(board, move);
-          if (
-            !isKingInCheck(
-              simulatedBoard,
-              getKingPosition(simulatedBoard, player),
-              player,
-              castleState
-            )
-          ) {
+          if (!isKingInCheck(simulatedBoard, player, castleState)) {
             return false;
           }
         }
@@ -315,9 +322,7 @@ export const checkStalemate = (
   lastMove: Move | null,
   castleState: [boolean, boolean]
 ): boolean => {
-  if (
-    isKingInCheck(board, getKingPosition(board, player), player, castleState)
-  ) {
+  if (isKingInCheck(board, player, castleState)) {
     return false;
   }
 
@@ -338,14 +343,7 @@ export const checkStalemate = (
           const move: Move = { from, to };
           const simulatedBoard = simulateMove(board, move);
 
-          if (
-            !isKingInCheck(
-              simulatedBoard,
-              getKingPosition(simulatedBoard, player),
-              player,
-              castleState
-            )
-          ) {
+          if (!isKingInCheck(simulatedBoard, player, castleState)) {
             return false;
           }
         }
@@ -431,8 +429,7 @@ export const isValidMove = (
     return false;
 
   const simulatedBoard = simulateMove(board, move);
-  const kingPosition = getKingPosition(simulatedBoard, player);
-  if (isKingInCheck(simulatedBoard, kingPosition, player, castleState)) {
+  if (isKingInCheck(simulatedBoard, player, castleState)) {
     return false;
   }
 
@@ -457,7 +454,7 @@ export const getLegalMoves = (
         if (
           !isKingInCheck(
             simulatedBoard,
-            getKingPosition(simulatedBoard, player),
+
             player,
             castleState
           )
