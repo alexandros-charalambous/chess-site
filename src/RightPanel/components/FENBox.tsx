@@ -12,11 +12,8 @@ const FENBox: React.FC = () => {
   return (
     <Box
       sx={{
-        width: "25vw",
-        height: "15px",
-        padding: "20px",
-        bgcolor: "#00000066",
-        boxShadow: "0 3px 4px 0px #000000",
+        paddingBlock: "10px",
+        paddingInline: "20px",
         display: "flex",
         justifyContent: "space-between",
       }}

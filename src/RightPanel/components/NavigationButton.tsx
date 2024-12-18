@@ -76,7 +76,7 @@ const NavigationButton: React.FC = () => {
             "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
-            margin: 1,
+            margin: "4px",
           }}
           onClick={goToFirstMove}
         >
@@ -89,7 +89,7 @@ const NavigationButton: React.FC = () => {
             "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
-            margin: 1,
+            margin: "4px",
           }}
           onClick={goToPreviousMove}
         >
@@ -102,7 +102,7 @@ const NavigationButton: React.FC = () => {
             "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
-            margin: 1,
+            margin: "4px",
           }}
           onClick={goToNextMove}
         >
@@ -115,7 +115,7 @@ const NavigationButton: React.FC = () => {
             "&:hover": { bgcolor: "#20131066" },
             borderRadius: "10px",
             width: "23%",
-            margin: 1,
+            margin: "4px",
           }}
           onClick={goToLastMove}
         >

@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   checkCheck,
   checkCheckmate,
+  checkDrawByRepetition,
+  checkInsufficientMaterial,
   checkStalemate,
   getLegalMoves,
   isPromotionMove,
@@ -217,6 +219,22 @@ export const ChessProvider: React.FC<{ children: React.ReactNode }> = ({
       } else if (checkStalemate(newBoard, nextPlayer, move, canCastle)) {
         setIsStalemate(true);
         setResult({ winner: "Draw", method: "stalemate" });
+        setTimeout(() => {
+          setGameState("end");
+        }, 800);
+      } else if (checkDrawByRepetition(moveHistory)) {
+        setResult({
+          winner: "Draw",
+          method: "repetition",
+        });
+        setTimeout(() => {
+          setGameState("end");
+        }, 800);
+      } else if (checkInsufficientMaterial(newBoard)) {
+        setResult({
+          winner: "Draw",
+          method: "insufficient material",
+        });
         setTimeout(() => {
           setGameState("end");
         }, 800);

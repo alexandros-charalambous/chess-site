@@ -13,12 +13,12 @@ const ResetButton: React.FC = () => {
           onClick={resetBoard}
           sx={{
             bgcolor: "#372118",
-            width: "64px",
-            height: "64px",
+            minWidth: "44px",
+            height: "44px",
             borderRadius: "8px",
           }}
         >
-          <ReplayIcon fontSize="large" />
+          <ReplayIcon fontSize={"medium"} />
         </Button>
       </Tooltip>
     </>

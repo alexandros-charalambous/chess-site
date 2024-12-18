@@ -75,8 +75,7 @@ const MoveHistoryBox: React.FC = () => {
     <>
       <Box
         sx={{
-          width: "25vw",
-          height: "60vh",
+          height: { xs: "17vh", md: "60vh" },
           padding: "20px",
           overflowX: "hidden",
           userSelect: "none",
@@ -173,7 +172,7 @@ const MoveHistoryBox: React.FC = () => {
                   </Box>
                   <Box
                     sx={{
-                      width: "20%",
+                      width: "15%",
                       display: "flex",
                       justifyContent: "start",
                     }}

@@ -1,4 +1,4 @@
-import { Board, Move, Piece, PromotionPiece } from "./types";
+import { Board, Move, MoveHistory, Piece, PromotionPiece } from "./types";
 
 const isEnemyPiece = (from: string, to: string) => {
   if (to === null) return false;
@@ -25,6 +25,7 @@ const kingMove = (
         rookPiece?.substring(1, 2) === "R" &&
         board[row][from[1] + 1] === null &&
         board[row][from[1] + 2] === null &&
+        !isKingInCheck(board, pieceColor, castleState) &&
         kingPath.every(
           (pos) =>
             !isKingInCheck(
@@ -51,6 +52,7 @@ const kingMove = (
         board[row][from[1] - 1] === null &&
         board[row][from[1] - 2] === null &&
         board[row][from[1] - 3] === null &&
+        !isKingInCheck(board, pieceColor, castleState) &&
         kingPath.every(
           (pos) =>
             !isKingInCheck(
@@ -352,6 +354,133 @@ export const checkStalemate = (
   }
 
   return true;
+};
+
+export const checkDrawByRepetition = (moveHistory: MoveHistory[]): boolean => {
+  const fenCounts: { [fen: string]: number } = {};
+
+  moveHistory.forEach((move) => {
+    const fen = move.fen.split(" ").slice(0, 4).join(" ");
+    console.log(fen);
+
+    if (!fenCounts[fen]) {
+      fenCounts[fen] = 1;
+    } else {
+      fenCounts[fen] += 1;
+    }
+  });
+
+  for (const fen in fenCounts) {
+    if (fenCounts[fen] >= 3) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+export const checkInsufficientMaterial = (board: Piece[][]): boolean => {
+  let whiteBishops = 0;
+  let blackBishops = 0;
+  let whiteKnights = 0;
+  let blackKnights = 0;
+  let whiteHasOtherPieces = false;
+  let blackHasOtherPieces = false;
+
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const piece = board[row][col];
+      if (!piece) continue;
+
+      switch (piece) {
+        case "wK":
+        case "bK":
+          break;
+        case "wN":
+          whiteKnights++;
+          break;
+        case "bN":
+          blackKnights++;
+          break;
+        case "wB":
+          whiteBishops++;
+          break;
+        case "bB":
+          blackBishops++;
+          break;
+        default:
+          if (piece.startsWith("w")) whiteHasOtherPieces = true;
+          if (piece.startsWith("b")) blackHasOtherPieces = true;
+      }
+    }
+  }
+
+  // Rule 1: Both players only have kings
+  if (
+    !whiteBishops &&
+    !blackBishops &&
+    !whiteKnights &&
+    !blackKnights &&
+    !whiteHasOtherPieces &&
+    !blackHasOtherPieces
+  ) {
+    return true;
+  }
+
+  // Rule 2: King + Bishop vs King
+  if (
+    ((whiteBishops === 1 && !whiteKnights && !whiteHasOtherPieces) ||
+      (blackBishops === 1 && !blackKnights && !blackHasOtherPieces)) &&
+    !whiteKnights &&
+    !blackKnights &&
+    !whiteHasOtherPieces &&
+    !blackHasOtherPieces
+  ) {
+    return true;
+  }
+
+  // Rule 3: King + Knight vs King
+  if (
+    ((whiteKnights === 1 && !whiteBishops && !whiteHasOtherPieces) ||
+      (blackKnights === 1 && !blackBishops && !blackHasOtherPieces)) &&
+    !whiteBishops &&
+    !blackBishops &&
+    !whiteHasOtherPieces &&
+    !blackHasOtherPieces
+  ) {
+    return true;
+  }
+
+  // Rule 4: King + Bishops of the same color vs King
+  if (
+    whiteBishops > 0 &&
+    blackBishops > 0 &&
+    !whiteKnights &&
+    !blackKnights &&
+    !whiteHasOtherPieces &&
+    !blackHasOtherPieces
+  ) {
+    // Check if all bishops are on the same color
+    const areBishopsSameColor = (row: number, col: number) =>
+      (row + col) % 2 === 0;
+
+    let whiteBishopColor = null;
+    let blackBishopColor = null;
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const piece = board[row][col];
+        if (piece === "wB") whiteBishopColor = areBishopsSameColor(row, col);
+        if (piece === "bB") blackBishopColor = areBishopsSameColor(row, col);
+      }
+    }
+
+    if (whiteBishopColor === blackBishopColor) {
+      return true;
+    }
+  }
+
+  return false;
 };
 
 export const isPromotionMove = (board: Board, move: Move) => {

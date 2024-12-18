@@ -29,7 +29,7 @@ const GameMenuBox: React.FC = () => {
             flexDirection: "column",
             overflow: "hidden",
             boxShadow: "0 3px 4px 0px #000000",
-            width: "20%",
+            width: "450px",
             height: "350px",
             bgcolor: "#2d2d2d",
             borderRadius: 2,

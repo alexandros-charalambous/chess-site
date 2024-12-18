@@ -8,7 +8,7 @@ const LoadingScreen: React.FC = () => {
           position: "fixed",
           width: "100%",
           height: "100%",
-          bgcolor: "#f4f4f4",
+          bgcolor: "#2d2d2d",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

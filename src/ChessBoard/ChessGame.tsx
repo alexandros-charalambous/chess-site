@@ -1,5 +1,5 @@
-import { Grid2 } from "@mui/material";
-import React, { useState } from "react";
+import { Grid2, useMediaQuery } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import ChessBoard from "./components/ChessBoard";
 import ChessTimer from "./components/ChessTimer";
 import EvaluationBar from "./components/EvaluationBar";
@@ -7,6 +7,7 @@ import FileText from "./components/FileText";
 import GameMenuBox from "./components/GameMenuBox";
 import RankText from "./components/RankText";
 import ResultBox from "./components/ResultBox";
+import { theme } from "../App";
 
 export interface ChessBoardProps {
   squareSize: number;
@@ -14,36 +15,29 @@ export interface ChessBoardProps {
 
 const ChessGame: React.FC = () => {
   const [squareSize, setSquareSize] = useState<number>(90);
+  // Define media queries for breakpoints
+  const isXs = useMediaQuery(theme.breakpoints.only("xs"));
+  const isSm = useMediaQuery(theme.breakpoints.only("sm"));
+  const isMd = useMediaQuery(theme.breakpoints.only("md"));
+  const isLg = useMediaQuery(theme.breakpoints.only("lg"));
+  const isXl = useMediaQuery(theme.breakpoints.only("xl"));
 
-  // Function to determine the square size based on screen width
-  // const updateSquareSize = () => {
-  //   const screenWidth = window.innerWidth;
-  //   if (screenWidth < 1240) {
-  //     setSquareSize(60);
-  //   } else if (screenWidth < 1550) {
-  //     setSquareSize(80);
-  //   } else if (screenWidth < 1900) {
-  //     setSquareSize(100);
-  //   } else if (screenWidth < 2550) {
-  //     setSquareSize(120);
-  //   } else {
-  //     setSquareSize(150);
-  //   }
-  // };
+  // State to track variable based on screen size
+  const [boxWidth, setBoxWidth] = useState("100%");
 
-  // useEffect(() => {
-  //   // Set the initial square size
-  //   updateSquareSize();
-
-  //   // Add an event listener to update the square size on window resize
-  //   window.addEventListener("resize", updateSquareSize);
-
-  //   // Clean up the event listener on component unmount
-  //   return () => {
-  //     window.removeEventListener("resize", updateSquareSize);
-  //   };
-  // }, []);
-
+  useEffect(() => {
+    if (isXs) {
+      setSquareSize(60);
+    } else if (isSm) {
+      setSquareSize(60);
+    } else if (isMd) {
+      setSquareSize(60);
+    } else if (isLg) {
+      setSquareSize(75);
+    } else if (isXl) {
+      setSquareSize(90);
+    }
+  }, [isXs, isSm, isMd, isLg, isXl]);
   return (
     <>
       <GameMenuBox />
